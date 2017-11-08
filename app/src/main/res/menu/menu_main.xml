@@ -1,10 +1,40 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context="ddowney.com.speedrunbrowser.MainActivity">
+    tools:context="com.ddowney.speedrunbrowser.MainActivity">
+
+    <item
+        android:id="@+id/action_search"
+        android:orderInCategory="100"
+        android:title="@string/action_search"
+        android:icon="@drawable/ic_search"
+        app:showAsAction="collapseActionView|ifRoom"
+        app:actionViewClass="android.support.v7.widget.SearchView" />
+
+    <item
+        android:id="@+id/action_favourites"
+        android:orderInCategory="100"
+        android:title="@string/favourites"
+        app:showAsAction="ifRoom"
+        android:icon="@drawable/ic_bookmark_border"/>
+
+    <item
+        android:id="@+id/action_filter"
+        android:orderInCategory="100"
+        android:title="@string/filter_by_platform"
+        app:showAsAction="never"
+        />
+
+    <item
+        android:id="@+id/action_reset_filters"
+        android:orderInCategory="100"
+        android:title="@string/reset_list_filters"
+        app:showAsAction="never"/>
+
     <item
         android:id="@+id/action_settings"
         android:orderInCategory="100"
         android:title="@string/action_settings"
-        app:showAsAction="never" />
+        app:showAsAction="never"/>
+
 </menu>

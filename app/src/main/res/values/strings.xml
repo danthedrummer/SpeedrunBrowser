@@ -2,4 +2,9 @@
     <string name="app_name">Speedrun Browser</string>
     <string name="action_settings">Settings</string>
     <string name="main_button">Get Runs</string>
+    <string name="action_search">Search</string>
+    <string name="default_text">Default text</string>
+    <string name="filter_by_platform">Filter by platform</string>
+    <string name="favourites">Favourites</string>
+    <string name="reset_list_filters">Reset List Filters</string>
 </resources>
