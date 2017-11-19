@@ -122,7 +122,7 @@ class ViewLeaderboardsActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         return when (item?.itemId) {
-            R.id.action_favourites -> {
+            R.id.action_favourite -> {
                 Log.d(LOG_TAG, "Favourite clicked")
                 true
             }

@@ -113,17 +113,12 @@ class MainActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         return when (item?.itemId) {
-            R.id.action_settings -> {
-                Log.d(LOG_TAG, "Settings clicked")
-                true
-            }
-
             R.id.action_search -> {
                 Log.d(LOG_TAG, "Search clicked")
                 true
             }
 
-            R.id.action_favourites -> {
+            R.id.action_show_favourites -> {
                 changeGameListData(TempDataStore.fakeFavouriteGames.value)
                 true
             }
