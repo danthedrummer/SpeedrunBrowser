@@ -7,16 +7,19 @@ import android.view.ViewGroup
 import android.widget.BaseExpandableListAdapter
 import android.widget.TextView
 import com.ddowney.speedrunbrowser.R
+import com.ddowney.speedrunbrowser.models.CategoriesModel
+import com.ddowney.speedrunbrowser.models.LeaderboardModel
 
 /**
  * Expandable list adapter
  */
-class ExpandingCategoryListAdapter(private val context : Context, private val listDataHeader : List<String>,
-                                   private val listChildData : Map<String, List<String>>) : BaseExpandableListAdapter() {
+class ExpandingCategoryListAdapter(private val context : Context, private val groupHeadings: List<CategoriesModel>,
+                                   private val childData: Map<String, List<LeaderboardModel.RunPosition>>) : BaseExpandableListAdapter() {
 
     override fun getGroup(groupPosition: Int): Any {
-        return listDataHeader[groupPosition]
+        return groupHeadings[groupPosition]
     }
+
 
     override fun isChildSelectable(p0: Int, p1: Int): Boolean {
         return true
@@ -37,17 +40,25 @@ class ExpandingCategoryListAdapter(private val context : Context, private val li
         }
 
         val listHeader : TextView? = groupView?.findViewById(R.id.category_list_header)
-        listHeader?.text = getGroup(groupPosition) as String
+        listHeader?.text = (getGroup(groupPosition) as CategoriesModel).name
+
+        val subtextView : TextView? = groupView?.findViewById(R.id.category_list_subtext)
+        val group : CategoriesModel = getGroup(groupPosition) as CategoriesModel
+        subtextView?.text = if (group.players.value == 1) {
+            "Run has ${group.players.type} ${group.players.value} player"
+        } else {
+            "Run has ${group.players.type} ${group.players.value} players"
+        }
 
         return groupView
     }
 
     override fun getChildrenCount(groupPosition: Int): Int {
-        return listChildData[listDataHeader[groupPosition]]?.size ?: 0
+        return childData[groupHeadings[groupPosition].name]?.size ?: 0
     }
 
-    override fun getChild(groupPosition: Int, childPosition: Int): String? {
-        return listChildData[listDataHeader[groupPosition]]?.get(childPosition)
+    override fun getChild(groupPosition: Int, childPosition: Int): Any? {
+        return childData[groupHeadings[groupPosition].name]?.get(childPosition)
     }
 
     override fun getGroupId(groupPosition: Int): Long {
@@ -64,14 +75,20 @@ class ExpandingCategoryListAdapter(private val context : Context, private val li
             childView = inflater.inflate(R.layout.category_list_item, null)
         }
 
+        val child : LeaderboardModel.RunPosition = (getChild(groupPosition, childPosition) as LeaderboardModel.RunPosition)
+
         val recordPosition : TextView? = childView?.findViewById(R.id.record_position)
-        recordPosition?.text = (childPosition+1).toString()
+        recordPosition?.text = child.place.toString()
 
         val recordRunner : TextView? = childView?.findViewById(R.id.record_runner)
-        recordRunner?.text = getChild(groupPosition, childPosition)
+        if (child.run.players[0].name != "") {
+            recordRunner?.text = child.run.players[0].name
+        } else {
+            recordRunner?.text = child.run.players[0].id
+        }
 
         val recordTime : TextView? = childView?.findViewById(R.id.record_time)
-        recordTime?.text = getChild(groupPosition, childPosition)
+        recordTime?.text = child.run.times.primary
 
         return childView
     }
@@ -81,9 +98,7 @@ class ExpandingCategoryListAdapter(private val context : Context, private val li
     }
 
     override fun getGroupCount(): Int {
-        return listDataHeader.size
+        return groupHeadings.size
     }
-
-
 
 }

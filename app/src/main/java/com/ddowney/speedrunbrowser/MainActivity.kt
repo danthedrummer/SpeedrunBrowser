@@ -10,6 +10,7 @@ import android.support.v7.widget.SearchView
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import com.ddowney.speedrunbrowser.ViewRunActivity.Companion.RANDOM_RUN
 import com.ddowney.speedrunbrowser.adapters.GameListAdapter
 import com.ddowney.speedrunbrowser.adapters.PlatformListAdapter
 import com.ddowney.speedrunbrowser.models.*
@@ -76,12 +77,10 @@ class MainActivity : AppCompatActivity() {
         main_recycler.hasPendingAdapterUpdates()
 
         random_fab.setOnClickListener({
-            val runIntent = Intent(this, ViewGameActivity::class.java)
-            runIntent.putExtra(ViewGameActivity.GAME_ID_EXTRA,
-                    TempDataStore.gamesList[random.nextInt(TempDataStore.gamesList.size)].id)
+            val runIntent = Intent(this, ViewRunActivity::class.java)
+            runIntent.putExtra(RANDOM_RUN, true)
             startActivity(runIntent)
         })
-
 
     }
 
@@ -142,8 +141,8 @@ class MainActivity : AppCompatActivity() {
 
     private fun changeGameListData(data : List<GameModel>) {
         gameListAdapter = GameListAdapter(data) { game ->
-            val runIntent = Intent(this, ViewGameActivity::class.java)
-            runIntent.putExtra(ViewGameActivity.GAME_ID_EXTRA, game.id)
+            val runIntent = Intent(this, ViewLeaderboardsActivity::class.java)
+            runIntent.putExtra(ViewLeaderboardsActivity.GAME_ID_EXTRA, game.id)
             startActivity(runIntent)
         }
         main_recycler.adapter = gameListAdapter

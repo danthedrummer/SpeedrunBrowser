@@ -24,6 +24,7 @@ class SplashActivity : AppCompatActivity() {
         splash_image.setOnClickListener {
             handler.removeCallbacks(runnable)
             startActivity(intent)
+            finish()
         }
 
     }

@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.ddowney.speedrunbrowser.ViewGameActivity"
+    tools:context="com.ddowney.speedrunbrowser.ViewLeaderboardsActivity"
     android:orientation="vertical">
 
     <android.support.v7.widget.Toolbar
@@ -19,11 +19,6 @@
         app:title="@string/categories_title">
 
     </android.support.v7.widget.Toolbar>
-
-    <!--<TextView-->
-        <!--android:id="@+id/leaderboard_game_name"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="wrap_content" />-->
 
     <ExpandableListView
         android:id="@+id/expandable_category_list"
