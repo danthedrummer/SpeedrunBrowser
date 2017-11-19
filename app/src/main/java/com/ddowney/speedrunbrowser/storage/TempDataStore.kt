@@ -1,6 +1,5 @@
 package com.ddowney.speedrunbrowser.storage
 
-import android.util.Log
 import com.ddowney.speedrunbrowser.models.GameModel
 import com.ddowney.speedrunbrowser.models.PlatformModel
 
@@ -13,6 +12,8 @@ object TempDataStore {
 
     var gamesList : List<GameModel> = listOf()
     var platformsList : List<PlatformModel> = listOf()
+
+    var fakeFavouriteGames = lazy { listOf(gamesList[0], gamesList[200], gamesList[6688], gamesList[9432]) }
 
     /**
      * Gets a platform name by it's id

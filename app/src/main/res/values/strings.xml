@@ -6,5 +6,8 @@
     <string name="default_text">Default text</string>
     <string name="filter_by_platform">Filter by platform</string>
     <string name="favourites">Favourites</string>
-    <string name="reset_list_filters">Reset List Filters</string>
+    <string name="leaderboards_title">Leaderboards</string>
+    <string name="games_title">All Games</string>
+    <string name="categories_title">Categories</string>
+    <string name="clear_all_filters">Clear All filters</string>
 </resources>

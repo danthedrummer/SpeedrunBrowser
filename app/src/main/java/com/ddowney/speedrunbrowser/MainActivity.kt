@@ -22,7 +22,6 @@ import com.squareup.leakcanary.LeakCanary
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.functions.Consumer
 import io.reactivex.schedulers.Schedulers
-import com.ddowney.speedrunbrowser.ViewRunActivity
 
 import kotlinx.android.synthetic.main.activity_main.*
 import java.util.*
@@ -32,18 +31,21 @@ import java.util.*
  */
 class MainActivity : AppCompatActivity() {
 
-    val LOG_TAG = "MAIN_ACTIVITY_LOG"
+    companion object {
+        val LOG_TAG = "MAIN_ACTIVITY_LOG"
+    }
+
     private val random = Random()
 
     private lateinit var gameListAdapter : GameListAdapter
     private lateinit var platformListAdapter : PlatformListAdapter
 
-    val gson = GsonBuilder().create()
+    private val gson = GsonBuilder().create()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        setSupportActionBar(app_toolbar)
+        setSupportActionBar(main_toolbar)
 
         if (LeakCanary.isInAnalyzerProcess(this)) {
             return
@@ -74,11 +76,12 @@ class MainActivity : AppCompatActivity() {
         main_recycler.hasPendingAdapterUpdates()
 
         random_fab.setOnClickListener({
-            val runIntent = Intent(this, ViewRunActivity::class.java)
-            runIntent.putExtra(ViewRunActivity.GAME_ID_EXTRA,
+            val runIntent = Intent(this, ViewGameActivity::class.java)
+            runIntent.putExtra(ViewGameActivity.GAME_ID_EXTRA,
                     TempDataStore.gamesList[random.nextInt(TempDataStore.gamesList.size)].id)
             startActivity(runIntent)
         })
+
 
     }
 
@@ -86,7 +89,6 @@ class MainActivity : AppCompatActivity() {
         super.onNewIntent(intent)
         if (Intent.ACTION_SEARCH == intent?.action) {
             val query = intent.getStringExtra(SearchManager.QUERY) ?: ""
-            Log.d("Search", query)
 
             val gameObservable = ServiceManager.gameService.searchForGamesByName(query)
                     .subscribeOn(Schedulers.io())
@@ -103,9 +105,9 @@ class MainActivity : AppCompatActivity() {
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.menu_main, menu)
 
-        val seachManager = getSystemService(Context.SEARCH_SERVICE) as SearchManager
+        val searchManager = getSystemService(Context.SEARCH_SERVICE) as SearchManager
         val searchView = menu?.findItem(R.id.action_search)?.actionView as SearchView
-        searchView.setSearchableInfo(seachManager.getSearchableInfo(componentName))
+        searchView.setSearchableInfo(searchManager.getSearchableInfo(componentName))
 
         return true
     }
@@ -123,16 +125,11 @@ class MainActivity : AppCompatActivity() {
             }
 
             R.id.action_favourites -> {
-                Log.d(LOG_TAG, "Favourites clicked")
+                changeGameListData(TempDataStore.fakeFavouriteGames.value)
                 true
             }
 
-            R.id.action_filter -> {
-                Log.d(LOG_TAG, "Filter by platform clicked")
-                true
-            }
-
-            R.id.action_reset_filters -> {
+            R.id.action_clear_all -> {
                 changeGameListData(TempDataStore.gamesList)
                 true
             }
@@ -145,8 +142,8 @@ class MainActivity : AppCompatActivity() {
 
     private fun changeGameListData(data : List<GameModel>) {
         gameListAdapter = GameListAdapter(data) { game ->
-            val runIntent = Intent(this, ViewRunActivity::class.java)
-            runIntent.putExtra(ViewRunActivity.GAME_ID_EXTRA, game.id)
+            val runIntent = Intent(this, ViewGameActivity::class.java)
+            runIntent.putExtra(ViewGameActivity.GAME_ID_EXTRA, game.id)
             startActivity(runIntent)
         }
         main_recycler.adapter = gameListAdapter

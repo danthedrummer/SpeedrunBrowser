@@ -8,6 +8,4 @@ data class GameModel(val id : String,val names : GameNames,
                      var platforms : List<String>?) {
 
     data class GameNames(val international : String, val japanese : String, val twitch : String)
-
-
 }
