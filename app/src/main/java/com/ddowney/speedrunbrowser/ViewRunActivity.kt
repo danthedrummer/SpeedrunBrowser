@@ -9,6 +9,7 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import com.ddowney.speedrunbrowser.utils.FormattingTools
 import com.google.android.youtube.player.YouTubeBaseActivity
 import com.google.android.youtube.player.YouTubeInitializationResult
 import com.google.android.youtube.player.YouTubePlayer
@@ -39,6 +40,7 @@ class ViewRunActivity : YouTubeBaseActivity(), YouTubePlayer.OnInitializedListen
     private lateinit var delegate : AppCompatDelegate
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        //Using AppCompatDelegate to enable a toolbar with menu options
         delegate = AppCompatDelegate.create(this, this)
         delegate.onCreate(savedInstanceState)
         super.onCreate(savedInstanceState)
@@ -50,8 +52,9 @@ class ViewRunActivity : YouTubeBaseActivity(), YouTubePlayer.OnInitializedListen
 
         youtube_player.initialize(KEY, this)
 
+        val formattingTool = FormattingTools()
         vra_runner_name.text = runnerName
-        vra_run_time.text = getReadableTime(runTime)
+        vra_run_time.text = formattingTool.getReadableTime(runTime)
         vra_run_comment.text = runComment
 
         youtube_info_holder.visibility = View.VISIBLE
@@ -76,6 +79,11 @@ class ViewRunActivity : YouTubeBaseActivity(), YouTubePlayer.OnInitializedListen
             })
         }
 
+    }
+
+    override fun onDestroy() {
+        youtubePlayer.release()
+        super.onDestroy()
     }
 
     override fun onInitializationSuccess(provider: YouTubePlayer.Provider, player: YouTubePlayer, success: Boolean) {
@@ -113,42 +121,5 @@ class ViewRunActivity : YouTubeBaseActivity(), YouTubePlayer.OnInitializedListen
 
     override fun onSupportActionModeFinished(mode: ActionMode?) { }
 
-    /**
-     * Takes a time in seconds and returns it in a readable format
-     * e.g. 1 hour 14 minutes 40 seconds
-     *
-     * @param seconds The number of seconds
-     * @return The readable time
-     */
-    private fun getReadableTime(seconds : Int) : String {
-        val str = StringBuilder()
-        var tmpNum = seconds
-        var amount : Int
 
-        if (tmpNum / 3600 != 0) {
-            amount = tmpNum / 3600
-            when (amount) {
-                1 -> { str.append(" $amount hour") }
-                else -> { str.append(" $amount hours") }
-            }
-            tmpNum %= 3600
-        }
-
-        if (tmpNum / 60 != 0) {
-            amount = tmpNum / 60
-            when (amount) {
-                1 -> { str.append(" $amount minute") }
-                else -> { str.append(" $amount minutes") }
-            }
-            tmpNum %= 60
-        }
-
-        when (tmpNum) {
-            0 -> { }
-            1 -> { str.append(" $tmpNum second") }
-            else -> { str.append(" $tmpNum seconds") }
-        }
-
-        return str.toString()
-    }
 }
