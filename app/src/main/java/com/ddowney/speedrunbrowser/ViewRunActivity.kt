@@ -38,6 +38,7 @@ class ViewRunActivity : YouTubeBaseActivity(), YouTubePlayer.OnInitializedListen
 
     private lateinit var youtubePlayer : YouTubePlayer
     private lateinit var delegate : AppCompatDelegate
+    private lateinit var playerInitResult : YouTubeInitializationResult
 
     override fun onCreate(savedInstanceState: Bundle?) {
         //Using AppCompatDelegate to enable a toolbar with menu options
@@ -82,19 +83,22 @@ class ViewRunActivity : YouTubeBaseActivity(), YouTubePlayer.OnInitializedListen
     }
 
     override fun onDestroy() {
-        youtubePlayer.release()
+        if (playerInitResult == YouTubeInitializationResult.SUCCESS) {
+            youtubePlayer.release()
+        }
         super.onDestroy()
     }
 
     override fun onInitializationSuccess(provider: YouTubePlayer.Provider, player: YouTubePlayer, success: Boolean) {
         Log.d(LOG_TAG, "Player initialized successfully")
         youtubePlayer = player
-
         youtubePlayer.cueVideo(link.query.substring(2))
+        playerInitResult = YouTubeInitializationResult.SUCCESS
     }
 
     override fun onInitializationFailure(provider: YouTubePlayer.Provider, errorReason: YouTubeInitializationResult) {
         Log.d(LOG_TAG, "Failed to initialize player. Reason: $errorReason")
+        playerInitResult = errorReason
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
