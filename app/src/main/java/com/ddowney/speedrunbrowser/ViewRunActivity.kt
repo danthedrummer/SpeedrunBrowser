@@ -21,7 +21,7 @@ class ViewRunActivity : YouTubeBaseActivity(), YouTubePlayer.OnInitializedListen
 
     companion object {
         private val LOG_TAG = "ViewRunActivity"
-        private val KEY = "AIzaSyBvMgY4_Su-zu_f7rluSewVzKd2s7buFMM"
+        private val YOUTUBE_API_KEY = BuildConfig.YOUTUBE_API_KEY
         val RUN_EXTRA = "RUN_EXTRA"
         val RANDOM_RUN = "RANDOM_RUN"
     }
@@ -51,7 +51,7 @@ class ViewRunActivity : YouTubeBaseActivity(), YouTubePlayer.OnInitializedListen
         //Not a string resource as it will be changing programmatically
         run_toolbar.title = "Any% - 1st place"
 
-        youtube_player.initialize(KEY, this)
+        youtube_player.initialize(YOUTUBE_API_KEY, this)
 
         val formattingTool = FormattingTools()
         vra_runner_name.text = runnerName
