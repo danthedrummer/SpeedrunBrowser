@@ -23,15 +23,8 @@ class GameListAdapter(private val data : List<GameModel>, private val itemClick 
         fun bindGameModel(game : GameModel) {
             with(game) {
                 itemView.item_text.text = this.names.international
-                if (this.platforms != null && !this.platforms?.isEmpty()!!) {
-                    val tmp = mutableListOf<String>()
-                    this.platforms?.forEach {
-                        tmp.add(TempDataStore.getPlatformById(it))
-                    }
-                    itemView.item_subtext.text = tmp.joinToString(", ")
-                } else {
-                    itemView.item_subtext.text = "Platform Unavailable"
-                }
+                val platforms = game.platforms?.toString()
+                itemView.item_subtext.text = platforms?.substring(1, platforms.length-1)
                 itemView.setOnClickListener { itemClick(this) }
             }
         }

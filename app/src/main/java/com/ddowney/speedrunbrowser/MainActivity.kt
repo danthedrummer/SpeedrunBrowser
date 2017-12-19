@@ -12,9 +12,9 @@ import android.view.Menu
 import android.view.MenuItem
 import com.ddowney.speedrunbrowser.ViewRunActivity.Companion.RANDOM_RUN
 import com.ddowney.speedrunbrowser.adapters.GameListAdapter
-import com.ddowney.speedrunbrowser.adapters.PlatformListAdapter
 import com.ddowney.speedrunbrowser.models.*
 import com.ddowney.speedrunbrowser.services.ServiceManager
+import com.ddowney.speedrunbrowser.storage.Storage
 import com.ddowney.speedrunbrowser.storage.TempDataStore
 import com.ddowney.speedrunbrowser.utils.JsonResourceReader
 import com.google.gson.GsonBuilder
@@ -39,9 +39,10 @@ class MainActivity : AppCompatActivity() {
     private val random = Random()
 
     private lateinit var gameListAdapter : GameListAdapter
-    private lateinit var platformListAdapter : PlatformListAdapter
 
     private val gson = GsonBuilder().create()
+
+    private var gameList : List<GameModel> = listOf()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,23 +54,33 @@ class MainActivity : AppCompatActivity() {
         }
         LeakCanary.install(this.application)
 
-        if (TempDataStore.gamesList.isEmpty()) {
-            TempDataStore.gamesList = JsonResourceReader(resources, R.raw.all_games, gson)
+        val storage = Storage(this)
+
+        gameList = storage.readListFromStorage(Storage.ALL_GAMES_KEY, object: TypeToken<List<GameModel>>(){})
+        if (gameList.isEmpty()) {
+            val rawGameList = JsonResourceReader(resources, R.raw.all_games, gson)
                     .constructUsingGson(object : TypeToken<ResponseWrapperM<GameModel>>() {})
                     .data
+
+            val rawPlatformList = JsonResourceReader(resources, R.raw.all_platforms, gson)
+                        .constructUsingGson(object : TypeToken<ResponseWrapperM<PlatformModel>>() {})
+                        .data
+
+            rawGameList.forEach { game ->
+                val newPlatformList = mutableListOf<String>()
+                game.platforms?.forEach { platformId ->
+                    rawPlatformList
+                            .filter { it.id == platformId }
+                            .forEach { newPlatformList.add(it.name) }
+                }
+                game.platforms = newPlatformList
+            }
+
+            storage.writeListToStorage(Storage.ALL_GAMES_KEY, rawGameList, object: TypeToken<List<GameModel>>(){})
+            gameList = rawGameList
         }
 
-        if (TempDataStore.platformsList.isEmpty()) {
-            TempDataStore.platformsList = JsonResourceReader(resources, R.raw.all_platforms, gson)
-                    .constructUsingGson(object : TypeToken<ResponseWrapperM<PlatformModel>>() {})
-                    .data
-        }
-
-        changeGameListData(TempDataStore.gamesList)
-
-        platformListAdapter = PlatformListAdapter(TempDataStore.platformsList) { x ->
-            Log.d(LOG_TAG, "${x.name} clicked!")
-        }
+        changeGameListData(gameList)
 
         main_recycler.setHasFixedSize(true)
         main_recycler.layoutManager = LinearLayoutManager(this)
@@ -119,12 +130,15 @@ class MainActivity : AppCompatActivity() {
             }
 
             R.id.action_show_favourites -> {
-                changeGameListData(TempDataStore.fakeFavouriteGames.value)
+//                changeGameListData(TempDataStore.fakeFavouriteGames.value)
+                val storage = Storage(this)
+                val favourites = storage.readListFromStorage(Storage.FAVOURITES_KEY, object: TypeToken<List<GameModel>>() {})
+                changeGameListData(favourites)
                 true
             }
 
             R.id.action_clear_all -> {
-                changeGameListData(TempDataStore.gamesList)
+                changeGameListData(gameList)
                 true
             }
 
