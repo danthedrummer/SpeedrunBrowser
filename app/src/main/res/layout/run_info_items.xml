@@ -7,53 +7,79 @@
     android:layout_marginStart="10dp"
     android:layout_marginEnd="10dp">
 
-    <TextView
-        android:id="@+id/vra_runner_name_label"
+    <LinearLayout
+        android:id="@+id/runner_name_holder"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/runner_name"
-        style="@style/run_info_label_style"/>
-    <TextView
-        android:id="@+id/vra_runner_name"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        style="@style/run_info_value_style"/>
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        style="@style/run_divider_style"/>
+        android:orientation="vertical"
+        android:visibility="gone"
+        android:layout_marginTop="10dp">
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            style="@style/run_divider_style"/>
+        <TextView
+            android:id="@+id/vra_runner_name_label"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/runner_name"
+            style="@style/run_info_label_style"/>
+        <TextView
+            android:id="@+id/vra_runner_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="@style/run_info_value_style"/>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            style="@style/run_divider_style"/>
+    </LinearLayout>
 
-    <TextView
-        android:id="@+id/vra_run_time_label"
+    <LinearLayout
+        android:id="@+id/time_holder"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/run_time"
-        style="@style/run_info_label_style"/>
-    <TextView
-        android:id="@+id/vra_run_time"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        style="@style/run_info_value_style" />
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        style="@style/run_divider_style"/>
+        android:orientation="vertical"
+        android:visibility="gone">
+        <TextView
+            android:id="@+id/vra_run_time_label"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/run_time"
+            style="@style/run_info_label_style"/>
+        <TextView
+            android:id="@+id/vra_run_time"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="@style/run_info_value_style" />
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            style="@style/run_divider_style"/>
+    </LinearLayout>
 
-    <TextView
-        android:id="@+id/vra_run_comment_label"
+    <LinearLayout
+        android:id="@+id/comment_holder"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/runner_comment"
-        style="@style/run_info_label_style"/>
-    <TextView
-        android:id="@+id/vra_run_comment"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        style="@style/run_info_value_style" />
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        style="@style/run_divider_style"/>
+        android:orientation="vertical"
+        android:visibility="gone">
+        <TextView
+            android:id="@+id/vra_run_comment_label"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/runner_comment"
+            style="@style/run_info_label_style"/>
+        <TextView
+            android:id="@+id/vra_run_comment"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="@style/run_info_value_style"/>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            style="@style/run_divider_style"/>
+    </LinearLayout>
 
     <LinearLayout
         android:id="@+id/youtube_info_holder"
@@ -145,6 +171,25 @@
             android:layout_width="match_parent"
             android:layout_height="1dp"
             style="@style/run_divider_style"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/fallback_video_holder"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:visibility="gone"
+        android:layout_marginTop="16dp">
+        <Button
+            android:id="@+id/fallback_video_button"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:text="@string/tap_here_to_view_video"
+            style="@style/run_info_label_style"
+            android:textSize="14sp"
+            android:background="@drawable/video_link_button"
+            android:layout_marginBottom="16dp"
+            android:paddingBottom="0dp"/>
     </LinearLayout>
 
 </LinearLayout>

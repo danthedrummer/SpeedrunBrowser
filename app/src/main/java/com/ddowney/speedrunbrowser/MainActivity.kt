@@ -15,7 +15,6 @@ import com.ddowney.speedrunbrowser.adapters.GameListAdapter
 import com.ddowney.speedrunbrowser.models.*
 import com.ddowney.speedrunbrowser.services.ServiceManager
 import com.ddowney.speedrunbrowser.storage.Storage
-import com.ddowney.speedrunbrowser.storage.TempDataStore
 import com.ddowney.speedrunbrowser.utils.JsonResourceReader
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
@@ -77,6 +76,7 @@ class MainActivity : AppCompatActivity() {
             }
 
             storage.writeListToStorage(Storage.ALL_GAMES_KEY, rawGameList, object: TypeToken<List<GameModel>>(){})
+            storage.writeListToStorage(Storage.ALL_PLATFORMS_KEY, rawPlatformList, object: TypeToken<List<PlatformModel>>(){})
             gameList = rawGameList
         }
 
@@ -105,6 +105,17 @@ class MainActivity : AppCompatActivity() {
                     .observeOn(AndroidSchedulers.mainThread())
 
             val gameConsumer = Consumer<ResponseWrapperM<GameModel>> { (data) ->
+                val storage = Storage(this)
+                val platformsList = storage.readListFromStorage(Storage.ALL_PLATFORMS_KEY, object: TypeToken<List<PlatformModel>>() {})
+                data.forEach { game ->
+                    val newPlatformList = mutableListOf<String>()
+                    game.platforms?.forEach { platformId ->
+                        platformsList
+                                .filter { it.id == platformId }
+                                .forEach { newPlatformList.add(it.name) }
+                    }
+                    game.platforms = newPlatformList
+                }
                 changeGameListData(data)
             }
 
@@ -130,7 +141,6 @@ class MainActivity : AppCompatActivity() {
             }
 
             R.id.action_show_favourites -> {
-//                changeGameListData(TempDataStore.fakeFavouriteGames.value)
                 val storage = Storage(this)
                 val favourites = storage.readListFromStorage(Storage.FAVOURITES_KEY, object: TypeToken<List<GameModel>>() {})
                 changeGameListData(favourites)
@@ -151,7 +161,9 @@ class MainActivity : AppCompatActivity() {
     private fun changeGameListData(data : List<GameModel>) {
         gameListAdapter = GameListAdapter(data) { game ->
             val runIntent = Intent(this, ViewLeaderboardsActivity::class.java)
-            runIntent.putExtra(ViewLeaderboardsActivity.GAME_ID_EXTRA, game.id)
+            val bundle = Bundle()
+            bundle.putSerializable(ViewLeaderboardsActivity.GAME_EXTRA, game)
+            runIntent.putExtras(bundle)
             startActivity(runIntent)
         }
         main_recycler.adapter = gameListAdapter

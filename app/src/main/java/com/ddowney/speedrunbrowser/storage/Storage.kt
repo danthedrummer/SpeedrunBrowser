@@ -13,6 +13,7 @@ class Storage(val context: Context) {
     companion object {
         private val PREFERENCES: String = "SpeedrunBrowserPreferences"
         val ALL_GAMES_KEY = "ALL_GAMES_KEY"
+        val ALL_PLATFORMS_KEY = "ALL_PLATFORMS_KEY"
         val FAVOURITES_KEY = "FAVOURITES_KEY"
     }
 

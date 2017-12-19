@@ -7,38 +7,40 @@ class FormattingTools {
 
     /**
      * Takes a time in seconds and returns it in a readable format
-     * e.g. 1 hour 14 minutes 40 seconds
+     * e.g. 1:14:40.150 -> H:mm:ss.sss
      *
      * @param seconds The number of seconds
      * @return The readable time
      */
-    fun getReadableTime(seconds : Int) : String {
+    fun getReadableTime(seconds : Float) : String {
         val str = StringBuilder()
-        var tmpSeconds = seconds
+        var tmpSeconds = Math.round(seconds)
         var amount : Int
+
+        val millis : Float = seconds - tmpSeconds
 
         if (tmpSeconds / 3600 != 0) {
             amount = tmpSeconds / 3600
-            when (amount) {
-                1 -> { str.append(" $amount hour") }
-                else -> { str.append(" $amount hours") }
-            }
+            str.append("$amount:")
             tmpSeconds %= 3600
         }
 
         if (tmpSeconds / 60 != 0) {
             amount = tmpSeconds / 60
-            when (amount) {
-                1 -> { str.append(" $amount minute") }
-                else -> { str.append(" $amount minutes") }
+            when (amount < 10) {
+                true -> { str.append("0$amount:") }
+                false -> { str.append("$amount:") }
             }
             tmpSeconds %= 60
         }
 
-        when (tmpSeconds) {
-            0 -> { }
-            1 -> { str.append(" $tmpSeconds second") }
-            else -> { str.append(" $tmpSeconds seconds") }
+        when (tmpSeconds < 10) {
+            true -> { str.append("0$tmpSeconds") }
+            false -> { str.append("$tmpSeconds") }
+        }
+
+        if (millis > 0) {
+            str.append(".${Math.round(millis * 100)}")
         }
 
         return str.toString()

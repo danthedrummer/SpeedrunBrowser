@@ -1,5 +1,6 @@
 package com.ddowney.speedrunbrowser.adapters
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
@@ -9,6 +10,7 @@ import android.widget.TextView
 import com.ddowney.speedrunbrowser.R
 import com.ddowney.speedrunbrowser.models.CategoriesModel
 import com.ddowney.speedrunbrowser.models.LeaderboardModel
+import com.ddowney.speedrunbrowser.utils.FormattingTools
 
 /**
  * Expandable list adapter
@@ -78,17 +80,24 @@ class ExpandingCategoryListAdapter(private val context : Context, private val gr
         val child : LeaderboardModel.RunPosition = (getChild(groupPosition, childPosition) as LeaderboardModel.RunPosition)
 
         val recordPosition : TextView? = childView?.findViewById(R.id.record_position)
-        recordPosition?.text = child.place.toString()
-
-        val recordRunner : TextView? = childView?.findViewById(R.id.record_runner)
-        if (child.run.players[0].name != "") {
-            recordRunner?.text = child.run.players[0].name
-        } else {
-            recordRunner?.text = child.run.players[0].id
+        @SuppressLint("SetTextI18n")
+        when(child.place) {
+            1 -> recordPosition?.text = "${child.place}st"
+            2 -> recordPosition?.text = "${child.place}nd"
+            3 -> recordPosition?.text = "${child.place}rd"
+            else -> recordPosition?.text = "${child.place}th"
         }
 
+//        val recordRunner : TextView? = childView?.findViewById(R.id.record_runner)
+//        if (child.run.players[0].name != "") {
+//            recordRunner?.text = child.run.players[0].name
+//        } else {
+//            recordRunner?.text = child.run.players[0].id
+//        }
+
         val recordTime : TextView? = childView?.findViewById(R.id.record_time)
-        recordTime?.text = child.run.times.primary
+        val formatter = FormattingTools()
+        recordTime?.text = formatter.getReadableTime(child.run.times.primary_t)
 
         return childView
     }

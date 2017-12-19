@@ -19,4 +19,5 @@
     <string name="twitch_channel">Twitch</string>
     <string name="hitbox_channel">Hitbox</string>
     <string name="twitter_channel">Twitter</string>
+    <string name="tap_here_to_view_video">Tap here to watch the run!</string>
 </resources>

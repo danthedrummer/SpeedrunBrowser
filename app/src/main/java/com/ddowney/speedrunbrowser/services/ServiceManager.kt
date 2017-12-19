@@ -18,6 +18,6 @@ object ServiceManager {
     val gameService : GameService = retrofit.create(GameService::class.java)
     val runService : RunService = retrofit.create(RunService::class.java)
     val catergoryService : CategoriesService = retrofit.create(CategoriesService::class.java)
-
+    val userService : UserService = retrofit.create(UserService::class.java)
 
 }

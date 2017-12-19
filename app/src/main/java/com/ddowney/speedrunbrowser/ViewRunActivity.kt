@@ -1,6 +1,7 @@
 package com.ddowney.speedrunbrowser
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.support.v7.app.AppCompatCallback
 import android.support.v7.app.AppCompatDelegate
@@ -9,13 +10,19 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import com.ddowney.speedrunbrowser.models.ResponseWrapperS
+import com.ddowney.speedrunbrowser.models.RunModel
+import com.ddowney.speedrunbrowser.models.UserModel
+import com.ddowney.speedrunbrowser.services.ServiceManager
 import com.ddowney.speedrunbrowser.utils.FormattingTools
 import com.google.android.youtube.player.YouTubeBaseActivity
 import com.google.android.youtube.player.YouTubeInitializationResult
 import com.google.android.youtube.player.YouTubePlayer
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.functions.Consumer
+import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_view_run.*
 import kotlinx.android.synthetic.main.run_info_items.*
-import java.net.URI
 
 class ViewRunActivity : YouTubeBaseActivity(), YouTubePlayer.OnInitializedListener, AppCompatCallback {
 
@@ -23,22 +30,16 @@ class ViewRunActivity : YouTubeBaseActivity(), YouTubePlayer.OnInitializedListen
         private val LOG_TAG = "ViewRunActivity"
         private val YOUTUBE_API_KEY = BuildConfig.YOUTUBE_API_KEY
         val RUN_EXTRA = "RUN_EXTRA"
+        val CATEGORY_NAME_EXTRA = "CATEGORY_NAME_EXTRA"
+        val POSITION_EXTRA = "POSITION_EXTRA"
         val RANDOM_RUN = "RANDOM_RUN"
     }
 
-    //Sample data
-    private val runnerName = "nindiddeh"
-    private val runTime = 4480
-    private val runComment = "Bad Pianta RNG, Bianco 6 death, and bad end game. Will keep trying for 1:13!"
-    private val youtubeChannel = "https://www.youtube.com/channel/UCDOH__n9nq1r4vATGKKK6Iw"
-    private val twitchChannel = "https://www.twitch.tv/nindiddeh"
-    private val hitboxChannel = "https://www.smashcast.tv/"
-    private val twitterChannel = "https://www.twitter.com/diddeh14"
-    private val link = URI("https://www.youtube.com/watch?v=QwWSVON2gF4")
-
     private lateinit var youtubePlayer : YouTubePlayer
     private lateinit var delegate : AppCompatDelegate
-    private lateinit var playerInitResult : YouTubeInitializationResult
+    private var playerInitResult : YouTubeInitializationResult? = null
+
+    private lateinit var run : RunModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         //Using AppCompatDelegate to enable a toolbar with menu options
@@ -48,27 +49,95 @@ class ViewRunActivity : YouTubeBaseActivity(), YouTubePlayer.OnInitializedListen
         delegate.setContentView(R.layout.activity_view_run)
         delegate.setSupportActionBar(run_toolbar)
 
-        //Not a string resource as it will be changing programmatically
-        run_toolbar.title = "Any% - 1st place"
+        val bundle = this.intent.extras
+        if (bundle != null) {
+            run = bundle.getSerializable(RUN_EXTRA) as RunModel
+            val category = bundle.getString(CATEGORY_NAME_EXTRA)
+            val position = bundle.getInt(POSITION_EXTRA)
+            run_toolbar.title = "$category - #$position"
+        }
 
-        youtube_player.initialize(YOUTUBE_API_KEY, this)
+        if (run.players[0].rel == "user") {
+            val userObservable = ServiceManager.userService.getUserById(run.players[0].id)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
 
-        val formattingTool = FormattingTools()
-        vra_runner_name.text = runnerName
-        vra_run_time.text = formattingTool.getReadableTime(runTime)
-        vra_run_comment.text = runComment
+            val userConsumer = Consumer<ResponseWrapperS<UserModel>> { (data) ->
+                run_loading.visibility = View.GONE
 
-        youtube_info_holder.visibility = View.VISIBLE
-        vra_runner_youtube.text = youtubeChannel
+                vra_runner_name.text = data.names.international
+                runner_name_holder.visibility = View.VISIBLE
 
-        twitch_info_holder.visibility = View.VISIBLE
-        vra_runner_twitch.text = twitchChannel
+                val formattingTool = FormattingTools()
+                vra_run_time.text = formattingTool.getReadableTime(run.times.primary_t)
+                time_holder.visibility = View.VISIBLE
 
-        twitter_info_holder.visibility = View.VISIBLE
-        vra_runner_twitter.text = twitterChannel
+                if (run.comment != null) {
+                    vra_run_comment.text = run.comment
+                    comment_holder.visibility = View.VISIBLE
+                }
 
-        hitbox_info_holder.visibility = View.VISIBLE
-        vra_runner_hitbox.text = hitboxChannel
+                if (data.youtube != null) {
+                    val youtubeChannel = data.youtube.uri
+                    vra_runner_youtube.text = youtubeChannel.toString()
+                    youtube_info_holder.visibility = View.VISIBLE
+                    youtube_info_holder.setOnClickListener {
+                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(youtubeChannel.toString()))
+                        startActivity(intent)
+                    }
+                }
+
+                if (data.twitch != null) {
+                    val twitchChannel = data.twitch.uri
+                    vra_runner_twitch.text = twitchChannel.toString()
+                    twitch_info_holder.visibility = View.VISIBLE
+                    twitch_info_holder.setOnClickListener {
+                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(twitchChannel.toString()))
+                        startActivity(intent)
+                    }
+                }
+
+                if (data.twitter != null) {
+                    val twitterChannel = data.twitter.uri
+                    vra_runner_twitter.text = twitterChannel.toString()
+                    twitter_info_holder.visibility = View.VISIBLE
+                    twitter_info_holder.setOnClickListener {
+                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(twitterChannel.toString()))
+                        startActivity(intent)
+                    }
+                }
+
+                if (data.hitbox != null) {
+                    val hitboxChannel = data.hitbox.uri
+                    vra_runner_hitbox.text = hitboxChannel.toString()
+                    hitbox_info_holder.visibility = View.VISIBLE
+                    hitbox_info_holder.setOnClickListener {
+                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(hitboxChannel.toString()))
+                        startActivity(intent)
+                    }
+                }
+
+                displayVideo()
+            }
+            userObservable.subscribe(userConsumer)
+
+        } else {
+            run_loading.visibility = View.GONE
+
+            vra_runner_name.text = run.players[0].name
+            runner_name_holder.visibility = View.VISIBLE
+
+            val formattingTool = FormattingTools()
+            vra_run_time.text = formattingTool.getReadableTime(run.times.primary_t)
+            time_holder.visibility = View.VISIBLE
+
+            if (run.comment != null) {
+                vra_run_comment.text = run.comment
+                comment_holder.visibility = View.VISIBLE
+            }
+
+            displayVideo()
+        }
 
         if (intent.extras.containsKey(RANDOM_RUN) && intent.extras.get(RANDOM_RUN) == true) {
             random_fab.visibility = View.VISIBLE
@@ -79,11 +148,24 @@ class ViewRunActivity : YouTubeBaseActivity(), YouTubePlayer.OnInitializedListen
                 finish()
             })
         }
+    }
 
+    private fun displayVideo() {
+        val link = run.videos.links[0].uri
+        if (link.host.contains("youtube") || link.host.contains("youtu.be")) {
+            youtube_player.initialize(YOUTUBE_API_KEY, this)
+            youtube_player.visibility = View.VISIBLE
+        } else {
+            fallback_video_holder.visibility = View.VISIBLE
+            fallback_video_button.setOnClickListener {
+                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(link.toString()))
+                startActivity(intent)
+            }
+        }
     }
 
     override fun onDestroy() {
-        if (playerInitResult == YouTubeInitializationResult.SUCCESS) {
+        if (playerInitResult != null && playerInitResult == YouTubeInitializationResult.SUCCESS) {
             youtubePlayer.release()
         }
         super.onDestroy()
@@ -92,7 +174,14 @@ class ViewRunActivity : YouTubeBaseActivity(), YouTubePlayer.OnInitializedListen
     override fun onInitializationSuccess(provider: YouTubePlayer.Provider, player: YouTubePlayer, success: Boolean) {
         Log.d(LOG_TAG, "Player initialized successfully")
         youtubePlayer = player
-        youtubePlayer.cueVideo(link.query.substring(2))
+
+        val link = run.videos.links[0].uri
+        if (link.host.contains("youtube")) {
+            youtubePlayer.cueVideo(extractVideoLinkFromQuery(link.query))
+        } else if (link.host.contains("youtu.be")) {
+            youtubePlayer.cueVideo(link.path.substring(1))
+        }
+
         playerInitResult = YouTubeInitializationResult.SUCCESS
     }
 
@@ -124,6 +213,20 @@ class ViewRunActivity : YouTubeBaseActivity(), YouTubePlayer.OnInitializedListen
     override fun onSupportActionModeStarted(mode: ActionMode?) { }
 
     override fun onSupportActionModeFinished(mode: ActionMode?) { }
+
+    /**
+     * Extracts the youtube video id from a youtube url
+     */
+    private fun extractVideoLinkFromQuery(linkQuery : String) : String? {
+        val queries = linkQuery.split("&")
+        queries.forEach { query ->
+            if (query.contains("v=")) {
+                val split = query.indexOf("=")
+                return query.substring(split + 1)
+            }
+        }
+        return null
+    }
 
 
 }
