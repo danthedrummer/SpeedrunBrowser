@@ -7,11 +7,14 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.ExpandableListAdapter
+import android.widget.Toast
 import com.ddowney.speedrunbrowser.MainActivity.Companion.LOG_TAG
 import com.ddowney.speedrunbrowser.ViewRunActivity.Companion.RUN_EXTRA
 import com.ddowney.speedrunbrowser.adapters.ExpandingCategoryListAdapter
 import com.ddowney.speedrunbrowser.models.*
 import com.ddowney.speedrunbrowser.services.ServiceManager
+import com.ddowney.speedrunbrowser.storage.Storage
+import com.google.gson.reflect.TypeToken
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.functions.Consumer
 import io.reactivex.schedulers.Schedulers
@@ -124,6 +127,11 @@ class ViewLeaderboardsActivity : AppCompatActivity() {
         return when (item?.itemId) {
             R.id.action_favourite -> {
                 Log.d(LOG_TAG, "Favourite clicked")
+                when(updateFavourites(sampleGame)) { //TODO: replace sampleGame with actual selected game
+                    1 -> { Toast.makeText(this, "Added to favourites!", Toast.LENGTH_SHORT).show() }
+                    -1 -> { Toast.makeText(this, "Removed from favourites!", Toast.LENGTH_SHORT).show() }
+                    else -> { Toast.makeText(this, "Something went wrong", Toast.LENGTH_SHORT).show() }
+                }
                 true
             }
 
@@ -131,5 +139,28 @@ class ViewLeaderboardsActivity : AppCompatActivity() {
                 super.onOptionsItemSelected(item)
             }
         }
+    }
+
+    /**
+     * Updates the user favourites by adding the game if it is not already
+     * added to favourites or removing it if it is
+     */
+    private fun updateFavourites(game : GameModel) : Int {
+        val result: Int
+        val storage = Storage(this)
+        val updatedFavourites = storage.readListFromStorage(Storage.FAVOURITES_KEY,
+                object: TypeToken<List<GameModel>>() {}).toMutableList()
+
+        result = if (updatedFavourites.contains(game)) {
+            updatedFavourites.remove(game)
+            -1
+        } else {
+            updatedFavourites.add(game)
+            1
+        }
+
+        storage.writeListToStorage(Storage.FAVOURITES_KEY, updatedFavourites,
+                object: TypeToken<List<GameModel>>() {})
+        return result
     }
 }
