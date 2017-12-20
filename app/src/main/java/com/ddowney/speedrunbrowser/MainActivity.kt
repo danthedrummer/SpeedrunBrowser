@@ -22,7 +22,6 @@ import com.ddowney.speedrunbrowser.storage.Storage
 import com.ddowney.speedrunbrowser.utils.JsonResourceReader
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
-import com.squareup.leakcanary.LeakCanary
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.functions.Consumer
 import io.reactivex.schedulers.Schedulers
@@ -51,11 +50,6 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(main_toolbar)
-
-        if (LeakCanary.isInAnalyzerProcess(this)) {
-            return
-        }
-        LeakCanary.install(this.application)
 
         if (gameList.isEmpty()) {
             gameList = JsonResourceReader(resources, R.raw.all_games, gson)
