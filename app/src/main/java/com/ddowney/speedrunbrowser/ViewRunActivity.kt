@@ -47,6 +47,8 @@ class ViewRunActivity : YouTubeBaseActivity(), YouTubePlayer.OnInitializedListen
 
     private lateinit var menu : Menu
 
+    private val players = mutableListOf<UserModel>()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         //Using AppCompatDelegate to enable a toolbar with menu options
         delegate = AppCompatDelegate.create(this, this)
@@ -62,111 +64,72 @@ class ViewRunActivity : YouTubeBaseActivity(), YouTubePlayer.OnInitializedListen
             run_toolbar.title = game.names.international
         }
 
-        if (run.players[0].rel == "user") {
-            val userObservable = ServiceManager.userService.getUserById(run.players[0].id)
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-
-            val userConsumer = Consumer<ResponseWrapperS<UserModel>> { (data) ->
-                run_loading.visibility = View.GONE
-
-                vra_runner_name.text = data.names.international
-                runner_name_holder.visibility = View.VISIBLE
-
-                vra_category_name.text = bundle.getString(CATEGORY_NAME_EXTRA)
-                category_name_holder.visibility = View.VISIBLE
-
-                val place = bundle.getInt(POSITION_EXTRA)
-                vra_run_place.text = when (place) {
-                    1 -> "${bundle.getInt(POSITION_EXTRA)}st"
-                    2 -> "${bundle.getInt(POSITION_EXTRA)}nd"
-                    3 -> "${bundle.getInt(POSITION_EXTRA)}rd"
-                    else -> "${bundle.getInt(POSITION_EXTRA)}th"
+        var responses = 0
+        run.players.forEach { player ->
+            if (player.rel == "guest") {
+                players.add(UserModel("", UserModel.NamesModel(player.name, ""), player.uri,
+                        null, null, null, null, null))
+                responses++
+                if (responses == run.players.size) {
+                    displayUi(bundle)
                 }
-                run_place_holder.visibility = View.VISIBLE
+            } else {
+                val userObservable = ServiceManager.userService.getUserById(player.id)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
 
-                val formattingTool = FormattingTools()
-                vra_run_time.text = formattingTool.getReadableTime(run.times.primary_t)
-                time_holder.visibility = View.VISIBLE
-
-                if (run.comment != null) {
-                    vra_run_comment.text = run.comment
-                    comment_holder.visibility = View.VISIBLE
-                }
-
-                if (data.youtube != null) {
-                    val youtubeChannel = data.youtube.uri
-                    vra_runner_youtube.text = youtubeChannel.toString()
-                    youtube_info_holder.visibility = View.VISIBLE
-                    youtube_info_holder.setOnClickListener {
-                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(youtubeChannel.toString()))
-                        startActivity(intent)
+                val userConsumer = Consumer<ResponseWrapperS<UserModel>> { (data) ->
+                    players.add(data)
+                    responses++
+                    if (responses == run.players.size) {
+                        displayUi(bundle)
                     }
                 }
-
-                if (data.twitch != null) {
-                    val twitchChannel = data.twitch.uri
-                    vra_runner_twitch.text = twitchChannel.toString()
-                    twitch_info_holder.visibility = View.VISIBLE
-                    twitch_info_holder.setOnClickListener {
-                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(twitchChannel.toString()))
-                        startActivity(intent)
-                    }
-                }
-
-                if (data.twitter != null) {
-                    val twitterChannel = data.twitter.uri
-                    vra_runner_twitter.text = twitterChannel.toString()
-                    twitter_info_holder.visibility = View.VISIBLE
-                    twitter_info_holder.setOnClickListener {
-                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(twitterChannel.toString()))
-                        startActivity(intent)
-                    }
-                }
-
-                if (data.hitbox != null) {
-                    val hitboxChannel = data.hitbox.uri
-                    vra_runner_hitbox.text = hitboxChannel.toString()
-                    hitbox_info_holder.visibility = View.VISIBLE
-                    hitbox_info_holder.setOnClickListener {
-                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(hitboxChannel.toString()))
-                        startActivity(intent)
-                    }
-                }
-
-                displayVideo()
+                userObservable.subscribe(userConsumer)
             }
-            userObservable.subscribe(userConsumer)
-
-        } else {
-            run_loading.visibility = View.GONE
-
-            vra_runner_name.text = run.players[0].name
-            runner_name_holder.visibility = View.VISIBLE
-
-            vra_category_name.text = bundle.getString(CATEGORY_NAME_EXTRA)
-            category_name_holder.visibility = View.VISIBLE
-
-            val place = bundle.getInt(POSITION_EXTRA)
-            vra_run_place.text = when (place) {
-                1 -> "${bundle.getInt(POSITION_EXTRA)}st"
-                2 -> "${bundle.getInt(POSITION_EXTRA)}nd"
-                3 -> "${bundle.getInt(POSITION_EXTRA)}rd"
-                else -> "${bundle.getInt(POSITION_EXTRA)}th"
-            }
-            run_place_holder.visibility = View.VISIBLE
-
-            val formattingTool = FormattingTools()
-            vra_run_time.text = formattingTool.getReadableTime(run.times.primary_t)
-            time_holder.visibility = View.VISIBLE
-
-            if (run.comment != null) {
-                vra_run_comment.text = run.comment
-                comment_holder.visibility = View.VISIBLE
-            }
-
-            displayVideo()
         }
+
+        if (responses > 1) {
+            vra_runner_name_label.text = getString(R.string.runners_label)
+        }
+
+    }
+
+    private fun displayUi(bundle: Bundle) {
+        run_loading.visibility = View.GONE
+
+        val runnerNames = StringBuilder()
+        for (i in 0 until players.size) {
+            runnerNames.append(players[i].names.international)
+            if (i < players.size-1) {
+                runnerNames.append(", ")
+            }
+        }
+        vra_runner_name.text = runnerNames.toString()
+        runner_name_holder.visibility = View.VISIBLE
+
+        vra_category_name.text = bundle.getString(CATEGORY_NAME_EXTRA)
+        category_name_holder.visibility = View.VISIBLE
+
+        val place = bundle.getInt(POSITION_EXTRA)
+        vra_run_place.text = when (place) {
+            1 -> "${bundle.getInt(POSITION_EXTRA)}st"
+            2 -> "${bundle.getInt(POSITION_EXTRA)}nd"
+            3 -> "${bundle.getInt(POSITION_EXTRA)}rd"
+            else -> "${bundle.getInt(POSITION_EXTRA)}th"
+        }
+        run_place_holder.visibility = View.VISIBLE
+
+        val formattingTool = FormattingTools()
+        vra_run_time.text = formattingTool.getReadableTime(run.times.primary_t)
+        time_holder.visibility = View.VISIBLE
+
+        if (run.comment != null) {
+            vra_run_comment.text = run.comment
+            comment_holder.visibility = View.VISIBLE
+        }
+
+        displayVideo()
     }
 
     /**
@@ -175,6 +138,7 @@ class ViewRunActivity : YouTubeBaseActivity(), YouTubePlayer.OnInitializedListen
      * with a button that directs them to the video
      */
     private fun displayVideo() {
+        //TODO: Implement solution for watching multiple part videos
         val link = run.videos.links[0].uri
         if (link.host.contains("youtube") || link.host.contains("youtu.be")) {
             youtube_player.initialize(YOUTUBE_API_KEY, this)
@@ -218,8 +182,8 @@ class ViewRunActivity : YouTubeBaseActivity(), YouTubePlayer.OnInitializedListen
         delegate.menuInflater.inflate(R.menu.game_menu, menu)
         this.menu = menu
         val storage = Storage(this)
-        val favourites = storage.readListFromStorage(Storage.FAVOURITES_KEY, object: TypeToken<List<GameModel>>() {})
-        if (favourites.contains(game)) {
+        val favourites = storage.readListFromStorage(Storage.FAVOURITES_KEY, object: TypeToken<List<String>>() {})
+        if (favourites.contains(game.id)) {
             showRemoveFavourite()
         }
         return true
@@ -295,18 +259,18 @@ class ViewRunActivity : YouTubeBaseActivity(), YouTubePlayer.OnInitializedListen
         val result: Int
         val storage = Storage(this)
         val updatedFavourites = storage.readListFromStorage(Storage.FAVOURITES_KEY,
-                object: TypeToken<List<GameModel>>() {}).toMutableList()
+                object: TypeToken<List<String>>() {}).toMutableList()
 
-        result = if (updatedFavourites.contains(game)) {
-            updatedFavourites.remove(game)
+        result = if (updatedFavourites.contains(game.id)) {
+            updatedFavourites.remove(game.id)
             -1
         } else {
-            updatedFavourites.add(game)
+            updatedFavourites.add(game.id)
             1
         }
 
         storage.writeListToStorage(Storage.FAVOURITES_KEY, updatedFavourites,
-                object: TypeToken<List<GameModel>>() {})
+                object: TypeToken<List<String>>() {})
         return result
     }
 

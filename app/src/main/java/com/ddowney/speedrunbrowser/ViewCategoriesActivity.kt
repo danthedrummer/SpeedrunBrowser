@@ -108,8 +108,8 @@ class ViewCategoriesActivity : AppCompatActivity() {
         menuInflater.inflate(R.menu.game_menu, menu)
         this.menu = menu
         val storage = Storage(this)
-        val favourites = storage.readListFromStorage(FAVOURITES_KEY, object: TypeToken<List<GameModel>>() {})
-        if (favourites.contains(game)) {
+        val favourites = storage.readListFromStorage(FAVOURITES_KEY, object: TypeToken<List<String>>() {})
+        if (favourites.contains(game.id)) {
             showRemoveFavourite()
         }
         return true
@@ -145,18 +145,18 @@ class ViewCategoriesActivity : AppCompatActivity() {
         val result: Int
         val storage = Storage(this)
         val updatedFavourites = storage.readListFromStorage(Storage.FAVOURITES_KEY,
-                object: TypeToken<List<GameModel>>() {}).toMutableList()
+                object: TypeToken<List<String>>() {}).toMutableList()
 
-        result = if (updatedFavourites.contains(game)) {
-            updatedFavourites.remove(game)
+        result = if (updatedFavourites.contains(game.id)) {
+            updatedFavourites.remove(game.id)
             -1
         } else {
-            updatedFavourites.add(game)
+            updatedFavourites.add(game.id)
             1
         }
 
         storage.writeListToStorage(Storage.FAVOURITES_KEY, updatedFavourites,
-                object: TypeToken<List<GameModel>>() {})
+                object: TypeToken<List<String>>() {})
         return result
     }
 

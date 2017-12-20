@@ -11,9 +11,10 @@
     <string name="clear_all_filters">Clear all filters</string>
     <string name="action_favorite_game">Add game to favourites</string>
     <string name="run_title">Run</string>
-    <string name="runner_name">Runner</string>
-    <string name="run_time">Time</string>
-    <string name="runner_comment">Comment</string>
+    <string name="runner_label">Runner</string>
+    <string name="runners_label">Runners</string>
+    <string name="run_label">Time</string>
+    <string name="comment_label">Comment</string>
     <string name="youtube_channel">Youtube</string>
     <string name="twitch_channel">Twitch</string>
     <string name="hitbox_channel">Hitbox</string>

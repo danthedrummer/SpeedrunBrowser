@@ -7,7 +7,6 @@ import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.SearchView
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
@@ -45,6 +44,7 @@ class MainActivity : AppCompatActivity() {
     private val gson = GsonBuilder().create()
 
     private var gameList : List<GameModel> = listOf()
+    private var platformList : List<PlatformModel> = listOf()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -56,14 +56,14 @@ class MainActivity : AppCompatActivity() {
                     .constructUsingGson(object : TypeToken<ResponseWrapperM<GameModel>>() {})
                     .data
 
-            val rawPlatformList = JsonResourceReader(resources, R.raw.all_platforms, gson)
+            platformList = JsonResourceReader(resources, R.raw.all_platforms, gson)
                         .constructUsingGson(object : TypeToken<ResponseWrapperM<PlatformModel>>() {})
                         .data
 
             gameList.forEach { game ->
                 val newPlatformList = mutableListOf<String>()
                 game.platforms?.forEach { platformId ->
-                    rawPlatformList
+                    platformList
                             .filter { it.id == platformId }
                             .forEach { newPlatformList.add(it.name) }
                 }
@@ -95,12 +95,10 @@ class MainActivity : AppCompatActivity() {
                     .observeOn(AndroidSchedulers.mainThread())
 
             val gameConsumer = Consumer<ResponseWrapperM<GameModel>> { (data) ->
-                val storage = Storage(this)
-                val platformsList = storage.readListFromStorage(Storage.ALL_PLATFORMS_KEY, object: TypeToken<List<PlatformModel>>() {})
                 data.forEach { game ->
                     val newPlatformList = mutableListOf<String>()
                     game.platforms?.forEach { platformId ->
-                        platformsList
+                        platformList
                                 .filter { it.id == platformId }
                                 .forEach { newPlatformList.add(it.name) }
                     }
@@ -126,17 +124,13 @@ class MainActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         return when (item?.itemId) {
             R.id.action_show_favourites -> {
-                val storage = Storage(this)
-                val favourites = storage.readListFromStorage(Storage.FAVOURITES_KEY, object: TypeToken<List<GameModel>>() {})
-                if (!favourites.isEmpty()) {
-                    changeGameListData(favourites)
-                } else {
-                    Toast.makeText(this, resources.getText(R.string.no_favourites_saved), Toast.LENGTH_SHORT).show()
-                }
+                main_toolbar.title = resources.getText(R.string.favourites)
+                displayFavourites()
                 true
             }
 
             R.id.action_clear_all -> {
+                main_toolbar.title = resources.getText(R.string.games_title)
                 Toast.makeText(this, resources.getText(R.string.resetting_list), Toast.LENGTH_SHORT).show()
                 changeGameListData(gameList)
                 true
@@ -145,6 +139,21 @@ class MainActivity : AppCompatActivity() {
             else -> {
                 super.onOptionsItemSelected(item)
             }
+        }
+    }
+
+    private fun displayFavourites() {
+        val storage = Storage(this)
+        val favourites = storage.readListFromStorage(Storage.FAVOURITES_KEY, object: TypeToken<List<String>>() {})
+
+        if (!favourites.isEmpty()) {
+            val displayList = mutableListOf<GameModel>()
+                favourites.forEach { gameId ->
+                    gameList.filter { gameId == it.id }.map { displayList.add(it) }
+            }
+            changeGameListData(displayList)
+        } else {
+            Toast.makeText(this, resources.getText(R.string.no_favourites_saved), Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -167,7 +176,6 @@ class MainActivity : AppCompatActivity() {
      */
     private fun pickRandomRun() {
         val randomGame = gameList[random.nextInt(gameList.size-1)]
-        Log.d(LOG_TAG, randomGame.weblink)
 
         val categoriesObserver = ServiceManager.gameService.getCategoriesForGame(randomGame.id)
                 .subscribeOn(Schedulers.io())
