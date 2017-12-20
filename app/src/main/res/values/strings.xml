@@ -23,4 +23,8 @@
     <string name="leaderboard_position">Leaderboard position</string>
     <string name="something_went_wrong">Something went wrong :(</string>
     <string name="remove_game_from_favourites">Remove game from favourites</string>
+    <string name="no_favourites_saved">You have no favourites saved!</string>
+    <string name="resetting_list">Resetting game list</string>
+    <string name="added_to_favourites">Added to favourites!</string>
+    <string name="removed_from_favourites">Removed from favourites!</string>
 </resources>

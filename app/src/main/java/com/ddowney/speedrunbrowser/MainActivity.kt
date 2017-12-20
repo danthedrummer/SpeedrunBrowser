@@ -128,11 +128,16 @@ class MainActivity : AppCompatActivity() {
             R.id.action_show_favourites -> {
                 val storage = Storage(this)
                 val favourites = storage.readListFromStorage(Storage.FAVOURITES_KEY, object: TypeToken<List<GameModel>>() {})
-                changeGameListData(favourites)
+                if (!favourites.isEmpty()) {
+                    changeGameListData(favourites)
+                } else {
+                    Toast.makeText(this, resources.getText(R.string.no_favourites_saved), Toast.LENGTH_SHORT).show()
+                }
                 true
             }
 
             R.id.action_clear_all -> {
+                Toast.makeText(this, resources.getText(R.string.resetting_list), Toast.LENGTH_SHORT).show()
                 changeGameListData(gameList)
                 true
             }
@@ -187,7 +192,7 @@ class MainActivity : AppCompatActivity() {
                     intent.putExtras(bundle)
                     startActivity(intent)
                 } else {
-                    Toast.makeText(this, "Something went wrong :(", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, resources.getText(R.string.something_went_wrong), Toast.LENGTH_SHORT).show()
                 }
             }
 

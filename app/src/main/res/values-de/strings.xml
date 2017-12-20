@@ -17,4 +17,8 @@
     <string name="game">Spiel</string>
     <string name="leaderboard_position">Rangliste</string>
     <string name="something_went_wrong">Etwas ist schief gelaufen :(</string>
+    <string name="no_favourites_saved">Sie haben keine Favoriten gespeichert!</string>
+    <string name="resetting_list">Spieleliste zurücksetzen</string>
+    <string name="added_to_favourites">Zu Favoriten hinzugefügt!</string>
+    <string name="removed_from_favourites">Aus den Favoriten entfernt!</string>
 </resources>

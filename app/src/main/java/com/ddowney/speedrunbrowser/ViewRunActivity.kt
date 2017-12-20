@@ -248,14 +248,14 @@ class ViewRunActivity : YouTubeBaseActivity(), YouTubePlayer.OnInitializedListen
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         return when (item?.itemId) {
             R.id.action_add_favourite -> {
-                Toast.makeText(this, "Added to favourites!", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, resources.getText(R.string.added_to_favourites), Toast.LENGTH_SHORT).show()
                 showRemoveFavourite()
                 updateFavourites(game)
                 true
             }
 
             R.id.action_remove_favourite -> {
-                Toast.makeText(this, "Removed from favourites!", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, resources.getText(R.string.removed_from_favourites), Toast.LENGTH_SHORT).show()
                 showAddFavourite()
                 updateFavourites(game)
                 true
