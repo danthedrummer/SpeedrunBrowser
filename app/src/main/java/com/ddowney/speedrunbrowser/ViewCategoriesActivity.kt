@@ -42,12 +42,12 @@ class ViewCategoriesActivity : AppCompatActivity() {
         setContentView(R.layout.activity_view_category)
         setSupportActionBar(game_toolbar)
 
-        game_toolbar.title = game.names.international
-
         val bundle = this.intent.extras
         if (bundle != null) {
             game = bundle.getSerializable(GAME_EXTRA) as GameModel
         }
+
+        game_toolbar.title = game.names.international
 
         val categoryObservable = ServiceManager.gameService.getCategoriesForGame(game.id)
                 .subscribeOn(Schedulers.io())
