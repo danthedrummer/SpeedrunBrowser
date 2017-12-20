@@ -57,11 +57,8 @@ class MainActivity : AppCompatActivity() {
         }
         LeakCanary.install(this.application)
 
-        val storage = Storage(this)
-
-        gameList = storage.readListFromStorage(Storage.ALL_GAMES_KEY, object: TypeToken<List<GameModel>>(){})
         if (gameList.isEmpty()) {
-            val rawGameList = JsonResourceReader(resources, R.raw.all_games, gson)
+            gameList = JsonResourceReader(resources, R.raw.all_games, gson)
                     .constructUsingGson(object : TypeToken<ResponseWrapperM<GameModel>>() {})
                     .data
 
@@ -69,7 +66,7 @@ class MainActivity : AppCompatActivity() {
                         .constructUsingGson(object : TypeToken<ResponseWrapperM<PlatformModel>>() {})
                         .data
 
-            rawGameList.forEach { game ->
+            gameList.forEach { game ->
                 val newPlatformList = mutableListOf<String>()
                 game.platforms?.forEach { platformId ->
                     rawPlatformList
@@ -79,9 +76,6 @@ class MainActivity : AppCompatActivity() {
                 game.platforms = newPlatformList
             }
 
-            storage.writeListToStorage(Storage.ALL_GAMES_KEY, rawGameList, object: TypeToken<List<GameModel>>(){})
-            storage.writeListToStorage(Storage.ALL_PLATFORMS_KEY, rawPlatformList, object: TypeToken<List<PlatformModel>>(){})
-            gameList = rawGameList
         }
 
         changeGameListData(gameList)
