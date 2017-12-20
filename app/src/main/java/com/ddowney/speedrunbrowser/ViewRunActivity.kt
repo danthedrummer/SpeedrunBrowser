@@ -35,7 +35,6 @@ class ViewRunActivity : YouTubeBaseActivity(), YouTubePlayer.OnInitializedListen
         val CATEGORY_NAME_EXTRA = "CATEGORY_NAME_EXTRA"
         val POSITION_EXTRA = "POSITION_EXTRA"
         val RANDOM_RUN_EXTRA = "RANDOM_RUN_EXTRA"
-        val GAME_NAME_EXTRA = "GAME_NAME_EXTRA"
     }
 
     private lateinit var youtubePlayer : YouTubePlayer
@@ -45,6 +44,8 @@ class ViewRunActivity : YouTubeBaseActivity(), YouTubePlayer.OnInitializedListen
     private lateinit var run : RunModel
 
     private lateinit var game : GameModel
+
+    private lateinit var menu : Menu
 
     override fun onCreate(savedInstanceState: Bundle?) {
         //Using AppCompatDelegate to enable a toolbar with menu options
@@ -168,6 +169,11 @@ class ViewRunActivity : YouTubeBaseActivity(), YouTubePlayer.OnInitializedListen
         }
     }
 
+    /**
+     * Attempts to display the video to the user using the embedded player.
+     * If the video is not a youtube link, then the user is presented
+     * with a button that directs them to the video
+     */
     private fun displayVideo() {
         val link = run.videos.links[0].uri
         if (link.host.contains("youtube") || link.host.contains("youtu.be")) {
@@ -208,20 +214,50 @@ class ViewRunActivity : YouTubeBaseActivity(), YouTubePlayer.OnInitializedListen
         playerInitResult = errorReason
     }
 
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
         delegate.menuInflater.inflate(R.menu.game_menu, menu)
+        this.menu = menu
+        val storage = Storage(this)
+        val favourites = storage.readListFromStorage(Storage.FAVOURITES_KEY, object: TypeToken<List<GameModel>>() {})
+        if (favourites.contains(game)) {
+            showRemoveFavourite()
+        }
         return true
+    }
+
+    /**
+     * Shows the add favourite menu item and hides the remove favourite menu item
+     */
+    private fun showAddFavourite() {
+        val add = menu.findItem(R.id.action_add_favourite)
+        add.isVisible = true
+        val remove = menu.findItem(R.id.action_remove_favourite)
+        remove.isVisible = false
+    }
+
+    /**
+     * Shows the remove favourite menu item and hides the add favourite menu item
+     */
+    private fun showRemoveFavourite() {
+        val add = menu.findItem(R.id.action_add_favourite)
+        add.isVisible = false
+        val remove = menu.findItem(R.id.action_remove_favourite)
+        remove.isVisible = true
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         return when (item?.itemId) {
             R.id.action_add_favourite -> {
-                Log.d(MainActivity.LOG_TAG, "Favourite clicked")
-                when(updateFavourites(game)) {
-                    1 -> { Toast.makeText(this, "Added to favourites!", Toast.LENGTH_SHORT).show() }
-                    -1 -> { Toast.makeText(this, "Removed from favourites!", Toast.LENGTH_SHORT).show() }
-                    else -> { Toast.makeText(this, "Something went wrong", Toast.LENGTH_SHORT).show() }
-                }
+                Toast.makeText(this, "Added to favourites!", Toast.LENGTH_SHORT).show()
+                showRemoveFavourite()
+                updateFavourites(game)
+                true
+            }
+
+            R.id.action_remove_favourite -> {
+                Toast.makeText(this, "Removed from favourites!", Toast.LENGTH_SHORT).show()
+                showAddFavourite()
+                updateFavourites(game)
                 true
             }
 

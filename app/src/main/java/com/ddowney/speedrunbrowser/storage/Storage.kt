@@ -41,17 +41,4 @@ class Storage(val context: Context) {
         editor.putString(key, gson.toJson(data, token.type))
         editor.apply()
     }
-
-    /**
-     * Removes an entry from shared preferences
-     */
-    fun removeFromStorage(key : String) : Boolean {
-        return sharedPrefs.edit().remove(key).commit()
-    }
-
-    /**
-     * Wrapper class for the game list being stored or retrieved from storage
-     * to help with type erasure
-     */
-    data class ListWrapper<out T>(val list : List<T>)
 }

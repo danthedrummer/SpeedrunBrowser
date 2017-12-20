@@ -3,12 +3,10 @@ package com.ddowney.speedrunbrowser
 import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
-import com.ddowney.speedrunbrowser.MainActivity.Companion.LOG_TAG
 import com.ddowney.speedrunbrowser.ViewRunActivity.Companion.CATEGORY_NAME_EXTRA
 import com.ddowney.speedrunbrowser.ViewRunActivity.Companion.POSITION_EXTRA
 import com.ddowney.speedrunbrowser.ViewRunActivity.Companion.RUN_EXTRA
@@ -86,6 +84,9 @@ class ViewCategoriesActivity : AppCompatActivity() {
 
     }
 
+    /**
+     * Shows the add favourite menu item and hides the remove favourite menu item
+     */
     private fun showAddFavourite() {
         val add = menu.findItem(R.id.action_add_favourite)
         add.isVisible = true
@@ -93,6 +94,9 @@ class ViewCategoriesActivity : AppCompatActivity() {
         remove.isVisible = false
     }
 
+    /**
+     * Shows the remove favourite menu item and hides the add favourite menu item
+     */
     private fun showRemoveFavourite() {
         val add = menu.findItem(R.id.action_add_favourite)
         add.isVisible = false
@@ -156,8 +160,12 @@ class ViewCategoriesActivity : AppCompatActivity() {
         return result
     }
 
+    /**
+     * Updates the expandable list adapter with listHeaders and listChildren
+     *
+     * Also removes any headers with empty children from the list
+     */
     private fun updateListAdapter() {
-
         //This bit of magic removes any headers with empty children
         (0 until listHeaders.size)
                 .filter { !listChildren.containsKey(listHeaders[it].name)

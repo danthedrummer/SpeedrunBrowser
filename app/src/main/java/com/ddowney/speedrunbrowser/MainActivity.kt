@@ -13,7 +13,6 @@ import android.view.MenuItem
 import android.widget.Toast
 import com.ddowney.speedrunbrowser.ViewCategoriesActivity.Companion.GAME_EXTRA
 import com.ddowney.speedrunbrowser.ViewRunActivity.Companion.CATEGORY_NAME_EXTRA
-import com.ddowney.speedrunbrowser.ViewRunActivity.Companion.GAME_NAME_EXTRA
 import com.ddowney.speedrunbrowser.ViewRunActivity.Companion.POSITION_EXTRA
 import com.ddowney.speedrunbrowser.ViewRunActivity.Companion.RANDOM_RUN_EXTRA
 import com.ddowney.speedrunbrowser.adapters.GameListAdapter
@@ -138,11 +137,6 @@ class MainActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         return when (item?.itemId) {
-            R.id.action_search -> {
-                Log.d(LOG_TAG, "Search clicked")
-                true
-            }
-
             R.id.action_show_favourites -> {
                 val storage = Storage(this)
                 val favourites = storage.readListFromStorage(Storage.FAVOURITES_KEY, object: TypeToken<List<GameModel>>() {})
@@ -161,6 +155,9 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Updates the recycler view adapter
+     */
     private fun changeGameListData(data : List<GameModel>) {
         gameListAdapter = GameListAdapter(data) { game ->
             val runIntent = Intent(this, ViewCategoriesActivity::class.java)
@@ -172,6 +169,9 @@ class MainActivity : AppCompatActivity() {
         main_recycler.adapter = gameListAdapter
     }
 
+    /**
+     * Picks a random speedrun for the user to watch
+     */
     private fun pickRandomRun() {
         val randomGame = gameList[random.nextInt(gameList.size-1)]
         Log.d(LOG_TAG, randomGame.weblink)
