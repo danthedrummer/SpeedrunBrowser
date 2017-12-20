@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="action_settings">Einstellungen</string>
+    <string name="action_search">Search</string>
+    <string name="filter_by_platform">Filter für Plattform</string>
+    <string name="favourites">Favoriten</string>
+    <string name="leaderboards_title">Bestenlisten</string>
+    <string name="games_title">Alle Spiele</string>
+    <string name="categories_title">Kategorien</string>
+    <string name="clear_all_filters">Alle Filter löschen</string>
+    <string name="action_favorite_game">Spiel zu Favoriten hinzufügen</string>
+    <string name="run_title">Lauf</string>
+    <string name="runner_name">Läufer</string>
+    <string name="run_time">Zeit</string>
+    <string name="runner_comment">Kommentar</string>
+    <string name="tap_here_to_view_video">Tippen Sie hier, um den Lauf zu sehen!</string>
+    <string name="game">Spiel</string>
+    <string name="leaderboard_position">Rangliste</string>
+    <string name="something_went_wrong">Etwas ist schief gelaufen :(</string>
+</resources>

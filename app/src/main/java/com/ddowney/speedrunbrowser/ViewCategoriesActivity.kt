@@ -6,7 +6,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.ExpandableListAdapter
+import android.view.View
 import android.widget.Toast
 import com.ddowney.speedrunbrowser.MainActivity.Companion.LOG_TAG
 import com.ddowney.speedrunbrowser.ViewRunActivity.Companion.CATEGORY_NAME_EXTRA
@@ -16,13 +16,14 @@ import com.ddowney.speedrunbrowser.adapters.ExpandingCategoryListAdapter
 import com.ddowney.speedrunbrowser.models.*
 import com.ddowney.speedrunbrowser.services.ServiceManager
 import com.ddowney.speedrunbrowser.storage.Storage
+import com.ddowney.speedrunbrowser.storage.Storage.Companion.FAVOURITES_KEY
 import com.google.gson.reflect.TypeToken
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.functions.Consumer
 import io.reactivex.schedulers.Schedulers
-import kotlinx.android.synthetic.main.activity_view_game.*
+import kotlinx.android.synthetic.main.activity_view_category.*
 
-class ViewLeaderboardsActivity : AppCompatActivity() {
+class ViewCategoriesActivity : AppCompatActivity() {
 
     companion object {
         val GAME_EXTRA = "GAME_EXTRA"
@@ -36,9 +37,11 @@ class ViewLeaderboardsActivity : AppCompatActivity() {
 
     private var lastExpandedGroup = -1
 
+    private lateinit var menu : Menu
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_view_game)
+        setContentView(R.layout.activity_view_category)
         setSupportActionBar(game_toolbar)
 
         game_toolbar.title = "Leaderboards"
@@ -54,22 +57,28 @@ class ViewLeaderboardsActivity : AppCompatActivity() {
 
         val categoriesConsumer = Consumer<ResponseWrapperM<CategoriesModel>> { (data) ->
             listHeaders = data.toMutableList()
+            var responses = 0
 
-            data.forEach { category ->
-                val obs = ServiceManager.catergoryService.getRecordsForCategory(category.id, 5)
+            for (i in 0 until data.size) {
+                val recordsObserver = ServiceManager.catergoryService.getRecordsForCategory(data[i].id, 5)
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
-                val con = Consumer<ResponseWrapperM<LeaderboardModel>> { record ->
+                val recordsConsumer = Consumer<ResponseWrapperM<LeaderboardModel>> { record ->
                     if (record.data.isEmpty()) {
-                        listHeaders.remove(category)
+                        listHeaders.remove(data[i])
                     } else {
                         record.data.forEach {
-                            listChildren.put(category.name, it.runs)
+                            listChildren.put(data[i].name, it.runs)
                         }
                     }
-                    updateListAdapter()
+                    responses++
+                    if(responses == data.size) {
+                        updateListAdapter()
+                        run_loading.visibility = View.GONE
+                        expandable_category_list.visibility = View.VISIBLE
+                    }
                 }
-                obs.subscribe(con)
+                recordsObserver.subscribe(recordsConsumer)
             }
         }
 
@@ -77,20 +86,44 @@ class ViewLeaderboardsActivity : AppCompatActivity() {
 
     }
 
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+    private fun showAddFavourite() {
+        val add = menu.findItem(R.id.action_add_favourite)
+        add.isVisible = true
+        val remove = menu.findItem(R.id.action_remove_favourite)
+        remove.isVisible = false
+    }
+
+    private fun showRemoveFavourite() {
+        val add = menu.findItem(R.id.action_add_favourite)
+        add.isVisible = false
+        val remove = menu.findItem(R.id.action_remove_favourite)
+        remove.isVisible = true
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.game_menu, menu)
+        this.menu = menu
+        val storage = Storage(this)
+        val favourites = storage.readListFromStorage(FAVOURITES_KEY, object: TypeToken<List<GameModel>>() {})
+        if (favourites.contains(game)) {
+            showRemoveFavourite()
+        }
         return true
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         return when (item?.itemId) {
-            R.id.action_favourite -> {
-                Log.d(LOG_TAG, "Favourite clicked")
-                when(updateFavourites(game)) {
-                    1 -> { Toast.makeText(this, "Added to favourites!", Toast.LENGTH_SHORT).show() }
-                    -1 -> { Toast.makeText(this, "Removed from favourites!", Toast.LENGTH_SHORT).show() }
-                    else -> { Toast.makeText(this, "Something went wrong", Toast.LENGTH_SHORT).show() }
-                }
+            R.id.action_add_favourite -> {
+                Toast.makeText(this, "Added to favourites!", Toast.LENGTH_SHORT).show()
+                showRemoveFavourite()
+                updateFavourites(game)
+                true
+            }
+
+            R.id.action_remove_favourite -> {
+                Toast.makeText(this, "Removed from favourites!", Toast.LENGTH_SHORT).show()
+                showAddFavourite()
+                updateFavourites(game)
                 true
             }
 
@@ -124,6 +157,14 @@ class ViewLeaderboardsActivity : AppCompatActivity() {
     }
 
     private fun updateListAdapter() {
+
+        //This bit of magic removes any headers with empty children
+        (0 until listHeaders.size)
+                .filter { !listChildren.containsKey(listHeaders[it].name)
+                        || listChildren[listHeaders[it].name]!!.isEmpty() }
+                .map { listHeaders[it] }
+                .forEach { listHeaders.remove(it) }
+
         expListAdapter = ExpandingCategoryListAdapter(this, listHeaders, listChildren)
         expandable_category_list.setAdapter(expListAdapter)
 
@@ -139,8 +180,8 @@ class ViewLeaderboardsActivity : AppCompatActivity() {
 
             val run : RunModel? = listChildren[cat]?.get(childPosition)?.run
             if (run != null) {
-                Log.d("wubalub", run.toString())
                 bundle.putSerializable(RUN_EXTRA, run)
+                bundle.putSerializable(GAME_EXTRA, game)
                 intent.putExtras(bundle)
                 startActivity(intent)
             }

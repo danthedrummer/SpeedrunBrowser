@@ -1,13 +1,11 @@
 package com.ddowney.speedrunbrowser.adapters
 
 import android.support.v7.widget.RecyclerView
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.ddowney.speedrunbrowser.R
 import com.ddowney.speedrunbrowser.models.GameModel
-import com.ddowney.speedrunbrowser.storage.TempDataStore
 import kotlinx.android.synthetic.main.game_text_view.view.*
 
 

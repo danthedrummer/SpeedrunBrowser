@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.ddowney.speedrunbrowser.ViewLeaderboardsActivity"
+    tools:context="com.ddowney.speedrunbrowser.ViewCategoriesActivity"
     android:orientation="vertical">
 
     <android.support.v7.widget.Toolbar
@@ -16,9 +16,14 @@
         android:elevation="4dp"
         android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-        app:title="@string/categories_title">
+        app:title="@string/categories_title"/>
 
-    </android.support.v7.widget.Toolbar>
+    <ProgressBar
+        android:id="@+id/run_loading"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_marginTop="20dp"
+        android:layout_gravity="center"/>
 
     <ExpandableListView
         android:id="@+id/expandable_category_list"
@@ -26,6 +31,7 @@
         android:layout_height="match_parent"
         android:childDivider="#0000"
         android:groupIndicator="@null"
-        android:divider="#0000"/>
+        android:divider="#0000"
+        android:visibility="gone"/>
 
 </LinearLayout>

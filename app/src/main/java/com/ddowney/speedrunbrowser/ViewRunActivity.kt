@@ -10,14 +10,16 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import com.ddowney.speedrunbrowser.models.ResponseWrapperS
-import com.ddowney.speedrunbrowser.models.RunModel
-import com.ddowney.speedrunbrowser.models.UserModel
+import android.widget.Toast
+import com.ddowney.speedrunbrowser.ViewCategoriesActivity.Companion.GAME_EXTRA
+import com.ddowney.speedrunbrowser.models.*
 import com.ddowney.speedrunbrowser.services.ServiceManager
+import com.ddowney.speedrunbrowser.storage.Storage
 import com.ddowney.speedrunbrowser.utils.FormattingTools
 import com.google.android.youtube.player.YouTubeBaseActivity
 import com.google.android.youtube.player.YouTubeInitializationResult
 import com.google.android.youtube.player.YouTubePlayer
+import com.google.gson.reflect.TypeToken
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.functions.Consumer
 import io.reactivex.schedulers.Schedulers
@@ -32,7 +34,8 @@ class ViewRunActivity : YouTubeBaseActivity(), YouTubePlayer.OnInitializedListen
         val RUN_EXTRA = "RUN_EXTRA"
         val CATEGORY_NAME_EXTRA = "CATEGORY_NAME_EXTRA"
         val POSITION_EXTRA = "POSITION_EXTRA"
-        val RANDOM_RUN = "RANDOM_RUN"
+        val RANDOM_RUN_EXTRA = "RANDOM_RUN_EXTRA"
+        val GAME_NAME_EXTRA = "GAME_NAME_EXTRA"
     }
 
     private lateinit var youtubePlayer : YouTubePlayer
@@ -40,6 +43,8 @@ class ViewRunActivity : YouTubeBaseActivity(), YouTubePlayer.OnInitializedListen
     private var playerInitResult : YouTubeInitializationResult? = null
 
     private lateinit var run : RunModel
+
+    private lateinit var game : GameModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         //Using AppCompatDelegate to enable a toolbar with menu options
@@ -51,10 +56,9 @@ class ViewRunActivity : YouTubeBaseActivity(), YouTubePlayer.OnInitializedListen
 
         val bundle = this.intent.extras
         if (bundle != null) {
+            game = bundle.getSerializable(GAME_EXTRA) as GameModel
             run = bundle.getSerializable(RUN_EXTRA) as RunModel
-            val category = bundle.getString(CATEGORY_NAME_EXTRA)
-            val position = bundle.getInt(POSITION_EXTRA)
-            run_toolbar.title = "$category - #$position"
+            run_toolbar.title = game.names.international
         }
 
         if (run.players[0].rel == "user") {
@@ -67,6 +71,18 @@ class ViewRunActivity : YouTubeBaseActivity(), YouTubePlayer.OnInitializedListen
 
                 vra_runner_name.text = data.names.international
                 runner_name_holder.visibility = View.VISIBLE
+
+                vra_category_name.text = bundle.getString(CATEGORY_NAME_EXTRA)
+                category_name_holder.visibility = View.VISIBLE
+
+                val place = bundle.getInt(POSITION_EXTRA)
+                vra_run_place.text = when (place) {
+                    1 -> "${bundle.getInt(POSITION_EXTRA)}st"
+                    2 -> "${bundle.getInt(POSITION_EXTRA)}nd"
+                    3 -> "${bundle.getInt(POSITION_EXTRA)}rd"
+                    else -> "${bundle.getInt(POSITION_EXTRA)}th"
+                }
+                run_place_holder.visibility = View.VISIBLE
 
                 val formattingTool = FormattingTools()
                 vra_run_time.text = formattingTool.getReadableTime(run.times.primary_t)
@@ -127,6 +143,18 @@ class ViewRunActivity : YouTubeBaseActivity(), YouTubePlayer.OnInitializedListen
             vra_runner_name.text = run.players[0].name
             runner_name_holder.visibility = View.VISIBLE
 
+            vra_category_name.text = bundle.getString(CATEGORY_NAME_EXTRA)
+            category_name_holder.visibility = View.VISIBLE
+
+            val place = bundle.getInt(POSITION_EXTRA)
+            vra_run_place.text = when (place) {
+                1 -> "${bundle.getInt(POSITION_EXTRA)}st"
+                2 -> "${bundle.getInt(POSITION_EXTRA)}nd"
+                3 -> "${bundle.getInt(POSITION_EXTRA)}rd"
+                else -> "${bundle.getInt(POSITION_EXTRA)}th"
+            }
+            run_place_holder.visibility = View.VISIBLE
+
             val formattingTool = FormattingTools()
             vra_run_time.text = formattingTool.getReadableTime(run.times.primary_t)
             time_holder.visibility = View.VISIBLE
@@ -137,16 +165,6 @@ class ViewRunActivity : YouTubeBaseActivity(), YouTubePlayer.OnInitializedListen
             }
 
             displayVideo()
-        }
-
-        if (intent.extras.containsKey(RANDOM_RUN) && intent.extras.get(RANDOM_RUN) == true) {
-            random_fab.visibility = View.VISIBLE
-            random_fab.setOnClickListener({
-                val runIntent = Intent(this, ViewRunActivity::class.java)
-                runIntent.putExtra(RANDOM_RUN, true)
-                startActivity(runIntent)
-                finish()
-            })
         }
     }
 
@@ -197,8 +215,13 @@ class ViewRunActivity : YouTubeBaseActivity(), YouTubePlayer.OnInitializedListen
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         return when (item?.itemId) {
-            R.id.action_favourite -> {
+            R.id.action_add_favourite -> {
                 Log.d(MainActivity.LOG_TAG, "Favourite clicked")
+                when(updateFavourites(game)) {
+                    1 -> { Toast.makeText(this, "Added to favourites!", Toast.LENGTH_SHORT).show() }
+                    -1 -> { Toast.makeText(this, "Removed from favourites!", Toast.LENGTH_SHORT).show() }
+                    else -> { Toast.makeText(this, "Something went wrong", Toast.LENGTH_SHORT).show() }
+                }
                 true
             }
 
@@ -228,5 +251,27 @@ class ViewRunActivity : YouTubeBaseActivity(), YouTubePlayer.OnInitializedListen
         return null
     }
 
+    /**
+     * Updates the user favourites by adding the game if it is not already
+     * added to favourites or removing it if it is
+     */
+    private fun updateFavourites(game : GameModel) : Int {
+        val result: Int
+        val storage = Storage(this)
+        val updatedFavourites = storage.readListFromStorage(Storage.FAVOURITES_KEY,
+                object: TypeToken<List<GameModel>>() {}).toMutableList()
+
+        result = if (updatedFavourites.contains(game)) {
+            updatedFavourites.remove(game)
+            -1
+        } else {
+            updatedFavourites.add(game)
+            1
+        }
+
+        storage.writeListToStorage(Storage.FAVOURITES_KEY, updatedFavourites,
+                object: TypeToken<List<GameModel>>() {})
+        return result
+    }
 
 }

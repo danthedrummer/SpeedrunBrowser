@@ -36,6 +36,52 @@
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/category_name_holder"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:visibility="gone">
+        <TextView
+            android:id="@+id/vra_category_name_label"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/categories_title"
+            style="@style/run_info_label_style"/>
+        <TextView
+            android:id="@+id/vra_category_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="@style/run_info_value_style" />
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            style="@style/run_divider_style"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/run_place_holder"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:visibility="gone">
+        <TextView
+            android:id="@+id/vra_run_place_label"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/leaderboard_position"
+            style="@style/run_info_label_style"/>
+        <TextView
+            android:id="@+id/vra_run_place"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="@style/run_info_value_style" />
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            style="@style/run_divider_style"/>
+    </LinearLayout>
+
+    <LinearLayout
         android:id="@+id/time_holder"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

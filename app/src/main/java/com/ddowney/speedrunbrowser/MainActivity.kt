@@ -10,7 +10,12 @@ import android.support.v7.widget.SearchView
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
-import com.ddowney.speedrunbrowser.ViewRunActivity.Companion.RANDOM_RUN
+import android.widget.Toast
+import com.ddowney.speedrunbrowser.ViewCategoriesActivity.Companion.GAME_EXTRA
+import com.ddowney.speedrunbrowser.ViewRunActivity.Companion.CATEGORY_NAME_EXTRA
+import com.ddowney.speedrunbrowser.ViewRunActivity.Companion.GAME_NAME_EXTRA
+import com.ddowney.speedrunbrowser.ViewRunActivity.Companion.POSITION_EXTRA
+import com.ddowney.speedrunbrowser.ViewRunActivity.Companion.RANDOM_RUN_EXTRA
 import com.ddowney.speedrunbrowser.adapters.GameListAdapter
 import com.ddowney.speedrunbrowser.models.*
 import com.ddowney.speedrunbrowser.services.ServiceManager
@@ -88,9 +93,7 @@ class MainActivity : AppCompatActivity() {
         main_recycler.hasPendingAdapterUpdates()
 
         random_fab.setOnClickListener({
-            val runIntent = Intent(this, ViewRunActivity::class.java)
-            runIntent.putExtra(RANDOM_RUN, true)
-            startActivity(runIntent)
+            pickRandomRun()
         })
 
     }
@@ -160,13 +163,50 @@ class MainActivity : AppCompatActivity() {
 
     private fun changeGameListData(data : List<GameModel>) {
         gameListAdapter = GameListAdapter(data) { game ->
-            val runIntent = Intent(this, ViewLeaderboardsActivity::class.java)
+            val runIntent = Intent(this, ViewCategoriesActivity::class.java)
             val bundle = Bundle()
-            bundle.putSerializable(ViewLeaderboardsActivity.GAME_EXTRA, game)
+            bundle.putSerializable(ViewCategoriesActivity.GAME_EXTRA, game)
             runIntent.putExtras(bundle)
             startActivity(runIntent)
         }
         main_recycler.adapter = gameListAdapter
+    }
+
+    private fun pickRandomRun() {
+        val randomGame = gameList[random.nextInt(gameList.size-1)]
+        Log.d(LOG_TAG, randomGame.weblink)
+
+        val categoriesObserver = ServiceManager.gameService.getCategoriesForGame(randomGame.id)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+
+        val categoriesConsumer = Consumer<ResponseWrapperM<CategoriesModel>> { (categories) ->
+            val randomCategory = categories[random.nextInt(categories.size)]
+
+            val recordsObserver = ServiceManager.catergoryService.getRecordsForCategory(randomCategory.id, 1)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+
+            val recordsConsumer = Consumer<ResponseWrapperM<LeaderboardModel>> { (records) ->
+                if (records.isNotEmpty() && records[0].runs.isNotEmpty()) {
+                    val intent = Intent(this, ViewRunActivity::class.java)
+                    val bundle = Bundle()
+                    bundle.putSerializable(ViewRunActivity.RUN_EXTRA, records[0].runs[0].run)
+                    bundle.putBoolean(RANDOM_RUN_EXTRA, true)
+                    bundle.putString(CATEGORY_NAME_EXTRA, randomCategory.name)
+                    bundle.putSerializable(GAME_EXTRA, randomGame)
+                    bundle.putInt(POSITION_EXTRA, 1)
+                    intent.putExtras(bundle)
+                    startActivity(intent)
+                } else {
+                    Toast.makeText(this, "Something went wrong :(", Toast.LENGTH_SHORT).show()
+                }
+            }
+
+            recordsObserver.subscribe(recordsConsumer)
+        }
+
+        categoriesObserver.subscribe(categoriesConsumer)
     }
 
 }

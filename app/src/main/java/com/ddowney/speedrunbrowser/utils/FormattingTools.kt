@@ -40,7 +40,7 @@ class FormattingTools {
         }
 
         if (millis > 0) {
-            str.append(".${Math.round(millis * 100)}")
+            str.append(".${Math.round(millis * 1000)}")
         }
 
         return str.toString()
