@@ -17,6 +17,7 @@ import com.ddowney.speedrunbrowser.ViewRunActivity.Companion.RANDOM_RUN_EXTRA
 import com.ddowney.speedrunbrowser.adapters.GameListAdapter
 import com.ddowney.speedrunbrowser.models.*
 import com.ddowney.speedrunbrowser.services.ServiceManager
+import com.ddowney.speedrunbrowser.services.ServiceManager.errorConsumer
 import com.ddowney.speedrunbrowser.storage.Storage
 import com.ddowney.speedrunbrowser.utils.JsonResourceReader
 import com.google.gson.GsonBuilder
@@ -184,7 +185,7 @@ class MainActivity : AppCompatActivity() {
         val categoriesConsumer = Consumer<ResponseWrapperM<CategoriesModel>> { (categories) ->
             val randomCategory = categories[random.nextInt(categories.size)]
 
-            val recordsObserver = ServiceManager.catergoryService.getRecordsForCategory(randomCategory.id, 1)
+            val recordsObserver = ServiceManager.categoriesService.getRecordsForCategory(randomCategory.id, 1)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
 
@@ -204,10 +205,10 @@ class MainActivity : AppCompatActivity() {
                 }
             }
 
-            recordsObserver.subscribe(recordsConsumer)
+            recordsObserver.subscribe(recordsConsumer, errorConsumer)
         }
 
-        categoriesObserver.subscribe(categoriesConsumer)
+        categoriesObserver.subscribe(categoriesConsumer, errorConsumer)
     }
 
 }

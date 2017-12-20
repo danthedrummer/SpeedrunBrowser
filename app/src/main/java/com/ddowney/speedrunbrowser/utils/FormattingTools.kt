@@ -7,7 +7,7 @@ class FormattingTools {
 
     /**
      * Takes a time in seconds and returns it in a readable format
-     * e.g. 1:14:40.150 -> H:mm:ss.sss
+     * e.g. 1:14:40.150 -> HH:mm:ss.sss
      *
      * @param seconds The number of seconds
      * @return The readable time
@@ -21,8 +21,13 @@ class FormattingTools {
 
         if (tmpSeconds / 3600 != 0) {
             amount = tmpSeconds / 3600
-            str.append("$amount:")
+            when (amount < 10) {
+                true -> { str.append("0$amount:") }
+                false -> { str.append("$amount:") }
+            }
             tmpSeconds %= 3600
+        } else {
+            str.append("00:")
         }
 
         if (tmpSeconds / 60 != 0) {
@@ -32,11 +37,17 @@ class FormattingTools {
                 false -> { str.append("$amount:") }
             }
             tmpSeconds %= 60
+        } else {
+            str.append("00:")
         }
 
-        when (tmpSeconds < 10) {
-            true -> { str.append("0$tmpSeconds") }
-            false -> { str.append("$tmpSeconds") }
+        if (tmpSeconds != 0) {
+            when (tmpSeconds < 10) {
+                true -> str.append("0$tmpSeconds")
+                false -> str.append("$tmpSeconds")
+            }
+        } else {
+            str.append("00")
         }
 
         if (millis > 0) {

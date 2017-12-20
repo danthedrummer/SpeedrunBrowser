@@ -85,7 +85,7 @@ class ViewRunActivity : YouTubeBaseActivity(), YouTubePlayer.OnInitializedListen
                         displayUi(bundle)
                     }
                 }
-                userObservable.subscribe(userConsumer)
+                userObservable.subscribe(userConsumer, ServiceManager.errorConsumer)
             }
         }
 

@@ -58,7 +58,7 @@ class ViewCategoriesActivity : AppCompatActivity() {
             var responses = 0
 
             for (i in 0 until data.size) {
-                val recordsObserver = ServiceManager.catergoryService.getRecordsForCategory(data[i].id, 5)
+                val recordsObserver = ServiceManager.categoriesService.getRecordsForCategory(data[i].id, 5)
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                 val recordsConsumer = Consumer<ResponseWrapperM<LeaderboardModel>> { record ->
@@ -76,11 +76,11 @@ class ViewCategoriesActivity : AppCompatActivity() {
                         expandable_category_list.visibility = View.VISIBLE
                     }
                 }
-                recordsObserver.subscribe(recordsConsumer)
+                recordsObserver.subscribe(recordsConsumer, ServiceManager.errorConsumer)
             }
         }
 
-        categoryObservable.subscribe(categoriesConsumer)
+        categoryObservable.subscribe(categoriesConsumer, ServiceManager.errorConsumer)
 
     }
 
