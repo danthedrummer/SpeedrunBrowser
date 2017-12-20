@@ -1,9 +1,11 @@
 package com.ddowney.speedrunbrowser.services
 
+import com.ddowney.speedrunbrowser.BuildConfig
 import com.ddowney.speedrunbrowser.models.ResponseWrapperS
 import com.ddowney.speedrunbrowser.models.UserModel
 import io.reactivex.Observable
 import retrofit2.http.GET
+import retrofit2.http.Headers
 import retrofit2.http.Path
 
 /**
@@ -11,9 +13,7 @@ import retrofit2.http.Path
  */
 interface UserService {
 
-//    @GET("api/v1/categories/{id}/records")
-//    fun getRecordsForCategory(@Path("id") id : String, @Query("top") top : Int) : Observable<ResponseWrapperM<LeaderboardModel>>
-
+    @Headers("user-agent: ${BuildConfig.USER_AGENT_HEADER}")
     @GET("api/v1/users/{id}")
     fun getUserById(@Path("id") id : String) : Observable<ResponseWrapperS<UserModel>>
 }

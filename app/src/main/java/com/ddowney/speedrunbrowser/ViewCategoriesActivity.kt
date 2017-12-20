@@ -42,7 +42,7 @@ class ViewCategoriesActivity : AppCompatActivity() {
         setContentView(R.layout.activity_view_category)
         setSupportActionBar(game_toolbar)
 
-        game_toolbar.title = "Leaderboards"
+        game_toolbar.title = game.names.international
 
         val bundle = this.intent.extras
         if (bundle != null) {
