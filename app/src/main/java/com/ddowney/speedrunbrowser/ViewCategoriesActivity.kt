@@ -45,6 +45,10 @@ class ViewCategoriesActivity : AppCompatActivity() {
     private lateinit var menu: Menu
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        val component = (this.application as SpeedrunBrowser).component
+        gameProvider = component.gameProvider()
+        categoriesProvider = component.categoriesProvider()
+
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_view_category)
         setSupportActionBar(game_toolbar)
@@ -52,10 +56,6 @@ class ViewCategoriesActivity : AppCompatActivity() {
         val sharedPreferences = this.getSharedPreferences(SharedPreferencesStorage.PREFERENCES_NAME, Context.MODE_PRIVATE)
         val gson = GsonBuilder().create()
         storage = SharedPreferencesStorage(sharedPreferences, gson)
-
-        val client = OkHttpClient.Builder().build()
-        gameProvider = GameProviderImpl(client, MainActivity.BASE_URL, gson)
-        categoriesProvider = CategoriesProviderImpl(client, MainActivity.BASE_URL, gson)
 
         val bundle = this.intent.extras
         if (bundle != null) {

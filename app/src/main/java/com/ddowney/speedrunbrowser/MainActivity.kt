@@ -53,6 +53,10 @@ class MainActivity : AppCompatActivity() {
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        val component = (this.application as SpeedrunBrowser).component
+        gameProvider = component.gameProvider()
+        categoriesProvider = component.categoriesProvider()
+
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(main_toolbar)
@@ -60,10 +64,6 @@ class MainActivity : AppCompatActivity() {
         val sharedPreferences = this.getSharedPreferences(SharedPreferencesStorage.PREFERENCES_NAME, Context.MODE_PRIVATE)
         val gson = GsonBuilder().create()
         storage = SharedPreferencesStorage(sharedPreferences, gson)
-
-        val client = OkHttpClient.Builder().build()
-        gameProvider = GameProviderImpl(client, BASE_URL, gson)
-        categoriesProvider = CategoriesProviderImpl(client, BASE_URL, gson)
 
         if (gameList.isEmpty()) {
             gameList = JsonResourceReader(resources, R.raw.all_games, gson)
