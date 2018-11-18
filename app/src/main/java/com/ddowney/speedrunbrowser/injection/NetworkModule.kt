@@ -10,7 +10,7 @@ import okhttp3.OkHttpClient
 import java.util.concurrent.TimeUnit
 
 @Module
-class NetworkModule() {
+class NetworkModule {
 
     companion object {
         const val BASE_URL = "https://www.speedrun.com/"

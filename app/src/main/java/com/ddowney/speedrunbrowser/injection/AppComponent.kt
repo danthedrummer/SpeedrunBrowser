@@ -5,11 +5,12 @@ import com.ddowney.speedrunbrowser.networking.CategoriesProvider
 import com.ddowney.speedrunbrowser.networking.GameProvider
 import com.ddowney.speedrunbrowser.networking.RunProvider
 import com.ddowney.speedrunbrowser.networking.UserProvider
+import com.ddowney.speedrunbrowser.storage.Storage
 import dagger.Component
 import javax.inject.Singleton
 
 @Singleton
-@Component(modules = [AppModule::class, NetworkModule::class])
+@Component(modules = [AppModule::class, NetworkModule::class, StorageModule::class])
 interface AppComponent {
 
     fun inject(application: Application)
@@ -18,5 +19,7 @@ interface AppComponent {
     fun gameProvider(): GameProvider
     fun runProvider(): RunProvider
     fun userProvider(): UserProvider
+
+    fun storage(): Storage
 
 }

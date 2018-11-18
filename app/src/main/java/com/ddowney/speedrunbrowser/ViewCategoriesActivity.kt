@@ -16,6 +16,7 @@ import com.ddowney.speedrunbrowser.models.*
 import com.ddowney.speedrunbrowser.networking.*
 import com.ddowney.speedrunbrowser.storage.SharedPreferencesStorage
 import com.ddowney.speedrunbrowser.storage.SharedPreferencesStorage.Companion.FAVOURITES_KEY
+import com.ddowney.speedrunbrowser.storage.Storage
 import com.google.gson.GsonBuilder
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.functions.Consumer
@@ -29,7 +30,7 @@ class ViewCategoriesActivity : AppCompatActivity() {
         val GAME_EXTRA = "GAME_EXTRA"
     }
 
-    private lateinit var storage: SharedPreferencesStorage
+    private lateinit var storage: Storage
     private lateinit var gameProvider: GameProvider
     private lateinit var categoriesProvider: CategoriesProvider
     private val errorConsumer = ErrorConsumer()
@@ -48,14 +49,11 @@ class ViewCategoriesActivity : AppCompatActivity() {
         val component = (this.application as SpeedrunBrowser).component
         gameProvider = component.gameProvider()
         categoriesProvider = component.categoriesProvider()
+        storage = component.storage()
 
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_view_category)
         setSupportActionBar(game_toolbar)
-
-        val sharedPreferences = this.getSharedPreferences(SharedPreferencesStorage.PREFERENCES_NAME, Context.MODE_PRIVATE)
-        val gson = GsonBuilder().create()
-        storage = SharedPreferencesStorage(sharedPreferences, gson)
 
         val bundle = this.intent.extras
         if (bundle != null) {
