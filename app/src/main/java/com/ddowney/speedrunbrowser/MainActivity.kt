@@ -36,7 +36,6 @@ import java.util.*
 class MainActivity : AppCompatActivity() {
 
     companion object {
-        const val BASE_URL = "https://www.speedrun.com/"
         val LOG_TAG = "MAIN_ACTIVITY_LOG"
     }
 
