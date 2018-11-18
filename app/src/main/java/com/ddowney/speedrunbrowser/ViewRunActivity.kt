@@ -14,7 +14,7 @@ import android.widget.Toast
 import com.ddowney.speedrunbrowser.ViewCategoriesActivity.Companion.GAME_EXTRA
 import com.ddowney.speedrunbrowser.models.*
 import com.ddowney.speedrunbrowser.services.ServiceManager
-import com.ddowney.speedrunbrowser.storage.Storage
+import com.ddowney.speedrunbrowser.storage.SharedPreferencesStorage
 import com.ddowney.speedrunbrowser.utils.FormattingTools
 import com.google.android.youtube.player.YouTubeBaseActivity
 import com.google.android.youtube.player.YouTubeInitializationResult
@@ -181,9 +181,9 @@ class ViewRunActivity : YouTubeBaseActivity(), YouTubePlayer.OnInitializedListen
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         delegate.menuInflater.inflate(R.menu.game_menu, menu)
         this.menu = menu
-        val storage = Storage(this)
-        val favourites = storage.readListFromStorage(Storage.FAVOURITES_KEY, object: TypeToken<List<String>>() {})
-        if (favourites.contains(game.id)) {
+        val storage = SharedPreferencesStorage(this)
+        val storedFavourites = storage.get(SharedPreferencesStorage.FAVOURITES_KEY, StoredList::class.java)
+        if (storedFavourites != null && storedFavourites.list.contains(game.id)) {
             showRemoveFavourite()
         }
         return true
@@ -257,10 +257,10 @@ class ViewRunActivity : YouTubeBaseActivity(), YouTubePlayer.OnInitializedListen
      */
     private fun updateFavourites(game : GameModel) : Int {
         val result: Int
-        val storage = Storage(this)
-        val updatedFavourites = storage.readListFromStorage(Storage.FAVOURITES_KEY,
-                object: TypeToken<List<String>>() {}).toMutableList()
+        val storage = SharedPreferencesStorage(this)
 
+        val storedFavourites = storage.get(SharedPreferencesStorage.FAVOURITES_KEY, StoredList::class.java)
+        val updatedFavourites: MutableList<String> = storedFavourites?.list?.toMutableList() ?: mutableListOf()
         result = if (updatedFavourites.contains(game.id)) {
             updatedFavourites.remove(game.id)
             -1
@@ -269,8 +269,7 @@ class ViewRunActivity : YouTubeBaseActivity(), YouTubePlayer.OnInitializedListen
             1
         }
 
-        storage.writeListToStorage(Storage.FAVOURITES_KEY, updatedFavourites,
-                object: TypeToken<List<String>>() {})
+        storage.put(SharedPreferencesStorage.FAVOURITES_KEY, StoredList(updatedFavourites))
         return result
     }
 

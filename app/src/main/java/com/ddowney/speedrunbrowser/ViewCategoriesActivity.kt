@@ -13,8 +13,8 @@ import com.ddowney.speedrunbrowser.ViewRunActivity.Companion.RUN_EXTRA
 import com.ddowney.speedrunbrowser.adapters.ExpandingCategoryListAdapter
 import com.ddowney.speedrunbrowser.models.*
 import com.ddowney.speedrunbrowser.services.ServiceManager
-import com.ddowney.speedrunbrowser.storage.Storage
-import com.ddowney.speedrunbrowser.storage.Storage.Companion.FAVOURITES_KEY
+import com.ddowney.speedrunbrowser.storage.SharedPreferencesStorage
+import com.ddowney.speedrunbrowser.storage.SharedPreferencesStorage.Companion.FAVOURITES_KEY
 import com.google.gson.reflect.TypeToken
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.functions.Consumer
@@ -107,9 +107,9 @@ class ViewCategoriesActivity : AppCompatActivity() {
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.game_menu, menu)
         this.menu = menu
-        val storage = Storage(this)
-        val favourites = storage.readListFromStorage(FAVOURITES_KEY, object: TypeToken<List<String>>() {})
-        if (favourites.contains(game.id)) {
+        val storage = SharedPreferencesStorage(this)
+        val storedFavourites = storage.get(FAVOURITES_KEY, StoredList::class.java)
+        if (storedFavourites != null && storedFavourites.list.contains(game.id)) {
             showRemoveFavourite()
         }
         return true
@@ -143,10 +143,10 @@ class ViewCategoriesActivity : AppCompatActivity() {
      */
     private fun updateFavourites(game : GameModel) : Int {
         val result: Int
-        val storage = Storage(this)
-        val updatedFavourites = storage.readListFromStorage(Storage.FAVOURITES_KEY,
-                object: TypeToken<List<String>>() {}).toMutableList()
+        val storage = SharedPreferencesStorage(this)
 
+        val storedFavourites = storage.get(FAVOURITES_KEY, StoredList::class.java)
+        val updatedFavourites: MutableList<String> = storedFavourites?.list?.toMutableList() ?: mutableListOf()
         result = if (updatedFavourites.contains(game.id)) {
             updatedFavourites.remove(game.id)
             -1
@@ -155,8 +155,7 @@ class ViewCategoriesActivity : AppCompatActivity() {
             1
         }
 
-        storage.writeListToStorage(Storage.FAVOURITES_KEY, updatedFavourites,
-                object: TypeToken<List<String>>() {})
+        storage.put(SharedPreferencesStorage.FAVOURITES_KEY, StoredList(updatedFavourites))
         return result
     }
 

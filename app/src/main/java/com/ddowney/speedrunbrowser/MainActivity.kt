@@ -18,7 +18,7 @@ import com.ddowney.speedrunbrowser.adapters.GameListAdapter
 import com.ddowney.speedrunbrowser.models.*
 import com.ddowney.speedrunbrowser.services.ServiceManager
 import com.ddowney.speedrunbrowser.services.ServiceManager.errorConsumer
-import com.ddowney.speedrunbrowser.storage.Storage
+import com.ddowney.speedrunbrowser.storage.SharedPreferencesStorage
 import com.ddowney.speedrunbrowser.utils.JsonResourceReader
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
@@ -144,12 +144,12 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun displayFavourites() {
-        val storage = Storage(this)
-        val favourites = storage.readListFromStorage(Storage.FAVOURITES_KEY, object: TypeToken<List<String>>() {})
+        val storage = SharedPreferencesStorage(this)
+        val favourites = storage.get(SharedPreferencesStorage.FAVOURITES_KEY, StoredList::class.java)
 
-        if (!favourites.isEmpty()) {
+        if (favourites != null && !favourites.list.isEmpty()) {
             val displayList = mutableListOf<GameModel>()
-                favourites.forEach { gameId ->
+            favourites.list.forEach { gameId ->
                     gameList.filter { gameId == it.id }.map { displayList.add(it) }
             }
             changeGameListData(displayList)
