@@ -1,6 +1,7 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-kapt'
 
 android {
     compileSdkVersion rootProject.compileSdkVersion
@@ -42,6 +43,9 @@ dependencies {
     implementation group: "io.reactivex.rxjava2", name: "rxandroid", version: rootProject.rxAndroidVersion
     implementation group: "com.jakewharton.retrofit", name: "retrofit2-rxjava2-adapter", version: rootProject.retrofitRxAdapterVersion
     implementation group: "com.github.tommus", name: "youtube-android-player-api", version: rootProject.youtubePlayerVersion
+    implementation group: "com.google.dagger", name: "dagger", version: rootProject.daggerVersion
+
+    kapt group: "com.google.dagger", name: "dagger-compiler", version: rootProject.daggerVersion
 
     testImplementation group: "junit", name: "junit", version: rootProject.junitVersion
     testImplementation group: "org.mockito", name: "mockito-core", version: rootProject.ext.mockitoVersion

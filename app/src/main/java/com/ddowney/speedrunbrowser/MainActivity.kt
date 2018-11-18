@@ -18,6 +18,7 @@ import com.ddowney.speedrunbrowser.adapters.GameListAdapter
 import com.ddowney.speedrunbrowser.models.*
 import com.ddowney.speedrunbrowser.networking.*
 import com.ddowney.speedrunbrowser.storage.SharedPreferencesStorage
+import com.ddowney.speedrunbrowser.storage.Storage
 import com.ddowney.speedrunbrowser.utils.JsonResourceReader
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
@@ -35,11 +36,10 @@ import java.util.*
 class MainActivity : AppCompatActivity() {
 
     companion object {
-        const val BASE_URL = "https://www.speedrun.com/"
         val LOG_TAG = "MAIN_ACTIVITY_LOG"
     }
 
-    private lateinit var storage: SharedPreferencesStorage
+    private lateinit var storage: Storage
     private lateinit var gameProvider: GameProvider
     private lateinit var categoriesProvider: CategoriesProvider
     private val errorConsumer = ErrorConsumer()
@@ -53,17 +53,16 @@ class MainActivity : AppCompatActivity() {
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        val component = (this.application as SpeedrunBrowser).component
+        gameProvider = component.gameProvider()
+        categoriesProvider = component.categoriesProvider()
+        storage = component.storage()
+
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(main_toolbar)
 
-        val sharedPreferences = this.getSharedPreferences(SharedPreferencesStorage.PREFERENCES_NAME, Context.MODE_PRIVATE)
         val gson = GsonBuilder().create()
-        storage = SharedPreferencesStorage(sharedPreferences, gson)
-
-        val client = OkHttpClient.Builder().build()
-        gameProvider = GameProviderImpl(client, BASE_URL, gson)
-        categoriesProvider = CategoriesProviderImpl(client, BASE_URL, gson)
 
         if (gameList.isEmpty()) {
             gameList = JsonResourceReader(resources, R.raw.all_games, gson)

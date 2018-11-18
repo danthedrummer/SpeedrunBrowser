@@ -1,6 +1,5 @@
 package com.ddowney.speedrunbrowser
 
-import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -16,8 +15,8 @@ import com.ddowney.speedrunbrowser.ViewCategoriesActivity.Companion.GAME_EXTRA
 import com.ddowney.speedrunbrowser.models.*
 import com.ddowney.speedrunbrowser.networking.ErrorConsumer
 import com.ddowney.speedrunbrowser.networking.UserProvider
-import com.ddowney.speedrunbrowser.networking.UserProviderImpl
 import com.ddowney.speedrunbrowser.storage.SharedPreferencesStorage
+import com.ddowney.speedrunbrowser.storage.Storage
 import com.ddowney.speedrunbrowser.utils.TimeFormatter
 import com.google.android.youtube.player.YouTubeBaseActivity
 import com.google.android.youtube.player.YouTubeInitializationResult
@@ -28,7 +27,6 @@ import io.reactivex.functions.Consumer
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_view_run.*
 import kotlinx.android.synthetic.main.run_info_items.*
-import okhttp3.OkHttpClient
 
 class ViewRunActivity : YouTubeBaseActivity(), YouTubePlayer.OnInitializedListener, AppCompatCallback {
 
@@ -41,7 +39,7 @@ class ViewRunActivity : YouTubeBaseActivity(), YouTubePlayer.OnInitializedListen
         val RANDOM_RUN_EXTRA = "RANDOM_RUN_EXTRA"
     }
 
-    private lateinit var storage: SharedPreferencesStorage
+    private lateinit var storage: Storage
     private lateinit var userProvider: UserProvider
     private val errorConsumer = ErrorConsumer()
 
@@ -58,19 +56,16 @@ class ViewRunActivity : YouTubeBaseActivity(), YouTubePlayer.OnInitializedListen
     private val players = mutableListOf<User>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        val component = (this.application as SpeedrunBrowser).component
+        userProvider = component.userProvider()
+        storage = component.storage()
+
         //Using AppCompatDelegate to enable a toolbar with menu options
         delegate = AppCompatDelegate.create(this, this)
         delegate.onCreate(savedInstanceState)
         super.onCreate(savedInstanceState)
         delegate.setContentView(R.layout.activity_view_run)
         delegate.setSupportActionBar(run_toolbar)
-
-        val sharedPreferences = this.getSharedPreferences(SharedPreferencesStorage.PREFERENCES_NAME, Context.MODE_PRIVATE)
-        val gson = GsonBuilder().create()
-        storage = SharedPreferencesStorage(sharedPreferences, gson)
-
-        val client = OkHttpClient.Builder().build()
-        userProvider = UserProviderImpl(client, MainActivity.BASE_URL, gson)
 
         val bundle = this.intent.extras
         if (bundle != null) {
