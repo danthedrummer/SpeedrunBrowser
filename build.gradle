@@ -1,6 +1,7 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
 ext {
+    appName = "speedrun-browser-android"
     appVersionName = "2.0.0-SNAPSHOT"
     appVersionCode = 2
 

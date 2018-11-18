@@ -7,14 +7,14 @@ android {
     compileSdkVersion rootProject.compileSdkVersion
     buildToolsVersion '28.0.3'
     defaultConfig {
-        applicationId "ddowney.com.speedrunbrowser"
+        applicationId "com.ddowney.speedrunbrowser"
         minSdkVersion rootProject.minSdkVersion
         targetSdkVersion rootProject.compileSdkVersion
         versionCode rootProject.appVersionCode
         versionName rootProject.appVersionName
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         buildConfigField("String", "YOUTUBE_API_KEY", YOUTUBE_API_KEY)
-        buildConfigField("String", "USER_AGENT_HEADER", USER_AGENT_HEADER)
+        buildConfigField("String", "USER_AGENT_HEADER", "\"${rootProject.appName}/${rootProject.appVersionName}\"")
     }
     buildTypes {
         release {
