@@ -3,7 +3,7 @@ package com.ddowney.speedrunbrowser.models
 /**
  * Created by Dan on 18/11/2017.
  */
-data class Categories(
+data class Category(
         val id: String,
         val name: String,
         val weblink: String,

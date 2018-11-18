@@ -16,8 +16,7 @@ import com.ddowney.speedrunbrowser.ViewRunActivity.Companion.POSITION_EXTRA
 import com.ddowney.speedrunbrowser.ViewRunActivity.Companion.RANDOM_RUN_EXTRA
 import com.ddowney.speedrunbrowser.adapters.GameListAdapter
 import com.ddowney.speedrunbrowser.models.*
-import com.ddowney.speedrunbrowser.services.ServiceManager
-import com.ddowney.speedrunbrowser.services.ServiceManager.errorConsumer
+import com.ddowney.speedrunbrowser.networking.*
 import com.ddowney.speedrunbrowser.storage.SharedPreferencesStorage
 import com.ddowney.speedrunbrowser.utils.JsonResourceReader
 import com.google.gson.GsonBuilder
@@ -27,6 +26,7 @@ import io.reactivex.functions.Consumer
 import io.reactivex.schedulers.Schedulers
 
 import kotlinx.android.synthetic.main.activity_main.*
+import okhttp3.OkHttpClient
 import java.util.*
 
 /**
@@ -35,10 +35,14 @@ import java.util.*
 class MainActivity : AppCompatActivity() {
 
     companion object {
+        const val BASE_URL = "https://www.speedrun.com/"
         val LOG_TAG = "MAIN_ACTIVITY_LOG"
     }
 
     private lateinit var storage: SharedPreferencesStorage
+    private lateinit var gameProvider: GameProvider
+    private lateinit var categoriesProvider: CategoriesProvider
+    private val errorConsumer = ErrorConsumer()
 
     private val random = Random()
 
@@ -46,6 +50,7 @@ class MainActivity : AppCompatActivity() {
 
     private var gameList: List<Game> = listOf()
     private var platformList: List<Platform> = listOf()
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -55,6 +60,10 @@ class MainActivity : AppCompatActivity() {
         val sharedPreferences = this.getSharedPreferences(SharedPreferencesStorage.PREFERENCES_NAME, Context.MODE_PRIVATE)
         val gson = GsonBuilder().create()
         storage = SharedPreferencesStorage(sharedPreferences, gson)
+
+        val client = OkHttpClient.Builder().build()
+        gameProvider = GameProviderImpl(client, BASE_URL, gson)
+        categoriesProvider = CategoriesProviderImpl(client, BASE_URL, gson)
 
         if (gameList.isEmpty()) {
             gameList = JsonResourceReader(resources, R.raw.all_games, gson)
@@ -84,9 +93,9 @@ class MainActivity : AppCompatActivity() {
         main_recycler.adapter = gameListAdapter
         main_recycler.hasPendingAdapterUpdates()
 
-        random_fab.setOnClickListener({
+        random_fab.setOnClickListener {
             pickRandomRun()
-        })
+        }
 
     }
 
@@ -94,8 +103,9 @@ class MainActivity : AppCompatActivity() {
         super.onNewIntent(intent)
         if (Intent.ACTION_SEARCH == intent?.action) {
             val query = intent.getStringExtra(SearchManager.QUERY) ?: ""
+            val options = mapOf(Pair("name", query))
 
-            val gameObservable = ServiceManager.gameService.searchForGamesByName(query)
+            val gameObservable = gameProvider.getGames(options)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
 
@@ -181,14 +191,14 @@ class MainActivity : AppCompatActivity() {
     private fun pickRandomRun() {
         val randomGame = gameList[random.nextInt(gameList.size-1)]
 
-        val categoriesObserver = ServiceManager.gameService.getCategoriesForGame(randomGame.id)
+        val categoriesObserver = gameProvider.getCategoriesForGame(randomGame.id)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
 
-        val categoriesConsumer = Consumer<ListRoot<Categories>> { (categories) ->
+        val categoriesConsumer = Consumer<ListRoot<Category>> { (categories) ->
             val randomCategory = categories[random.nextInt(categories.size)]
 
-            val recordsObserver = ServiceManager.categoriesService.getRecordsForCategory(randomCategory.id, 1)
+            val recordsObserver = categoriesProvider.getRecordsForCategory(randomCategory.id, 1)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
 
