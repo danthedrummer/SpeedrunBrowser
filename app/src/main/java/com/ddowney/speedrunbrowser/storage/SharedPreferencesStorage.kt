@@ -6,8 +6,10 @@ import com.google.gson.Gson
 /**
  * [SharedPreferences] backed implementation of [Storage]. Uses [Gson] for serialisation.
  */
-class SharedPreferencesStorage(private val sharedPreferences: SharedPreferences,
-                               private val gson: Gson) : Storage {
+class SharedPreferencesStorage(
+        private val sharedPreferences: SharedPreferences,
+        private val gson: Gson
+) : Storage {
 
     companion object {
         const val PREFERENCES_NAME: String = "SpeedrunBrowserSharedPreferences"

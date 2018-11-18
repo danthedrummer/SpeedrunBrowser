@@ -3,7 +3,7 @@ package com.ddowney.speedrunbrowser.utils
 /**
  * Created by Dan on 22/11/2017.
  */
-class FormattingTools {
+class TimeFormatter {
 
     /**
      * Takes a time in seconds and returns it in a readable format
@@ -12,7 +12,7 @@ class FormattingTools {
      * @param seconds The number of seconds
      * @return The readable time
      */
-    fun getReadableTime(seconds : Float) : String {
+    fun getReadableTime(seconds: Float): String {
         val str = StringBuilder()
         var tmpSeconds = Math.round(seconds)
         var amount : Int

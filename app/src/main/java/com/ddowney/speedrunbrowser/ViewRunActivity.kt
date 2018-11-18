@@ -16,13 +16,11 @@ import com.ddowney.speedrunbrowser.ViewCategoriesActivity.Companion.GAME_EXTRA
 import com.ddowney.speedrunbrowser.models.*
 import com.ddowney.speedrunbrowser.services.ServiceManager
 import com.ddowney.speedrunbrowser.storage.SharedPreferencesStorage
-import com.ddowney.speedrunbrowser.utils.FormattingTools
+import com.ddowney.speedrunbrowser.utils.TimeFormatter
 import com.google.android.youtube.player.YouTubeBaseActivity
 import com.google.android.youtube.player.YouTubeInitializationResult
 import com.google.android.youtube.player.YouTubePlayer
-import com.google.gson.Gson
 import com.google.gson.GsonBuilder
-import com.google.gson.reflect.TypeToken
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.functions.Consumer
 import io.reactivex.schedulers.Schedulers
@@ -42,17 +40,17 @@ class ViewRunActivity : YouTubeBaseActivity(), YouTubePlayer.OnInitializedListen
 
     private lateinit var storage: SharedPreferencesStorage
 
-    private lateinit var youtubePlayer : YouTubePlayer
-    private lateinit var delegate : AppCompatDelegate
-    private var playerInitResult : YouTubeInitializationResult? = null
+    private lateinit var youtubePlayer: YouTubePlayer
+    private lateinit var delegate: AppCompatDelegate
+    private var playerInitResult: YouTubeInitializationResult? = null
 
-    private lateinit var run : RunModel
+    private lateinit var run: Run
 
-    private lateinit var game : GameModel
+    private lateinit var game: Game
 
-    private lateinit var menu : Menu
+    private lateinit var menu: Menu
 
-    private val players = mutableListOf<UserModel>()
+    private val players = mutableListOf<User>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         //Using AppCompatDelegate to enable a toolbar with menu options
@@ -68,15 +66,15 @@ class ViewRunActivity : YouTubeBaseActivity(), YouTubePlayer.OnInitializedListen
 
         val bundle = this.intent.extras
         if (bundle != null) {
-            game = bundle.getSerializable(GAME_EXTRA) as GameModel
-            run = bundle.getSerializable(RUN_EXTRA) as RunModel
+            game = bundle.getSerializable(GAME_EXTRA) as Game
+            run = bundle.getSerializable(RUN_EXTRA) as Run
             run_toolbar.title = game.names.international
         }
 
         var responses = 0
         run.players.forEach { player ->
             if (player.rel == "guest") {
-                players.add(UserModel("", UserModel.NamesModel(player.name, ""), player.uri,
+                players.add(User("", User.NamesModel(player.name, ""), player.uri,
                         null, null, null, null, null))
                 responses++
                 if (responses == run.players.size) {
@@ -87,7 +85,7 @@ class ViewRunActivity : YouTubeBaseActivity(), YouTubePlayer.OnInitializedListen
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
 
-                val userConsumer = Consumer<ResponseWrapperS<UserModel>> { (data) ->
+                val userConsumer = Consumer<ObjectRoot<User>> { (data) ->
                     players.add(data)
                     responses++
                     if (responses == run.players.size) {
@@ -129,7 +127,7 @@ class ViewRunActivity : YouTubeBaseActivity(), YouTubePlayer.OnInitializedListen
         }
         run_place_holder.visibility = View.VISIBLE
 
-        val formattingTool = FormattingTools()
+        val formattingTool = TimeFormatter()
         vra_run_time.text = formattingTool.getReadableTime(run.times.primary_t)
         time_holder.visibility = View.VISIBLE
 
@@ -190,7 +188,7 @@ class ViewRunActivity : YouTubeBaseActivity(), YouTubePlayer.OnInitializedListen
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         delegate.menuInflater.inflate(R.menu.game_menu, menu)
         this.menu = menu
-        val storedFavourites = storage.get(SharedPreferencesStorage.FAVOURITES_KEY, StoredList::class.java)
+        val storedFavourites = storage.get(SharedPreferencesStorage.FAVOURITES_KEY, Favourites::class.java)
         if (storedFavourites != null && storedFavourites.list.contains(game.id)) {
             showRemoveFavourite()
         }
@@ -263,10 +261,10 @@ class ViewRunActivity : YouTubeBaseActivity(), YouTubePlayer.OnInitializedListen
      * Updates the user favourites by adding the game if it is not already
      * added to favourites or removing it if it is
      */
-    private fun updateFavourites(game : GameModel) : Int {
+    private fun updateFavourites(game: Game): Int {
         val result: Int
 
-        val storedFavourites = storage.get(SharedPreferencesStorage.FAVOURITES_KEY, StoredList::class.java)
+        val storedFavourites = storage.get(SharedPreferencesStorage.FAVOURITES_KEY, Favourites::class.java)
         val updatedFavourites: MutableList<String> = storedFavourites?.list?.toMutableList() ?: mutableListOf()
         result = if (updatedFavourites.contains(game.id)) {
             updatedFavourites.remove(game.id)
@@ -276,7 +274,7 @@ class ViewRunActivity : YouTubeBaseActivity(), YouTubePlayer.OnInitializedListen
             1
         }
 
-        storage.put(SharedPreferencesStorage.FAVOURITES_KEY, StoredList(updatedFavourites))
+        storage.put(SharedPreferencesStorage.FAVOURITES_KEY, Favourites(updatedFavourites))
         return result
     }
 

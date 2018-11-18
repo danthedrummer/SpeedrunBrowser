@@ -42,10 +42,10 @@ class MainActivity : AppCompatActivity() {
 
     private val random = Random()
 
-    private lateinit var gameListAdapter : GameListAdapter
+    private lateinit var gameListAdapter: GameListAdapter
 
-    private var gameList : List<GameModel> = listOf()
-    private var platformList : List<PlatformModel> = listOf()
+    private var gameList: List<Game> = listOf()
+    private var platformList: List<Platform> = listOf()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -58,11 +58,11 @@ class MainActivity : AppCompatActivity() {
 
         if (gameList.isEmpty()) {
             gameList = JsonResourceReader(resources, R.raw.all_games, gson)
-                    .constructUsingGson(object : TypeToken<ResponseWrapperM<GameModel>>() {})
+                    .constructUsingGson(object : TypeToken<ListRoot<Game>>() {})
                     .data
 
             platformList = JsonResourceReader(resources, R.raw.all_platforms, gson)
-                        .constructUsingGson(object : TypeToken<ResponseWrapperM<PlatformModel>>() {})
+                        .constructUsingGson(object : TypeToken<ListRoot<Platform>>() {})
                         .data
 
             gameList.forEach { game ->
@@ -99,7 +99,7 @@ class MainActivity : AppCompatActivity() {
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
 
-            val gameConsumer = Consumer<ResponseWrapperM<GameModel>> { (data) ->
+            val gameConsumer = Consumer<ListRoot<Game>> { (data) ->
                 data.forEach { game ->
                     val newPlatformList = mutableListOf<String>()
                     game.platforms?.forEach { platformId ->
@@ -148,10 +148,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun displayFavourites() {
-        val favourites = storage.get(SharedPreferencesStorage.FAVOURITES_KEY, StoredList::class.java)
+        val favourites = storage.get(SharedPreferencesStorage.FAVOURITES_KEY, Favourites::class.java)
 
         if (favourites != null && !favourites.list.isEmpty()) {
-            val displayList = mutableListOf<GameModel>()
+            val displayList = mutableListOf<Game>()
             favourites.list.forEach { gameId ->
                     gameList.filter { gameId == it.id }.map { displayList.add(it) }
             }
@@ -164,7 +164,7 @@ class MainActivity : AppCompatActivity() {
     /**
      * Updates the recycler view adapter
      */
-    private fun changeGameListData(data : List<GameModel>) {
+    private fun changeGameListData(data : List<Game>) {
         gameListAdapter = GameListAdapter(data) { game ->
             val runIntent = Intent(this, ViewCategoriesActivity::class.java)
             val bundle = Bundle()
@@ -185,14 +185,14 @@ class MainActivity : AppCompatActivity() {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
 
-        val categoriesConsumer = Consumer<ResponseWrapperM<CategoriesModel>> { (categories) ->
+        val categoriesConsumer = Consumer<ListRoot<Categories>> { (categories) ->
             val randomCategory = categories[random.nextInt(categories.size)]
 
             val recordsObserver = ServiceManager.categoriesService.getRecordsForCategory(randomCategory.id, 1)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
 
-            val recordsConsumer = Consumer<ResponseWrapperM<LeaderboardModel>> { (records) ->
+            val recordsConsumer = Consumer<ListRoot<Leaderboard>> { (records) ->
                 if (records.isNotEmpty() && records[0].runs.isNotEmpty()) {
                     val intent = Intent(this, ViewRunActivity::class.java)
                     val bundle = Bundle()
