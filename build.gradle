@@ -17,6 +17,7 @@ ext {
     rxAndroidVersion = "2.0.1"
     retrofitRxAdapterVersion = "1.0.0"
     youtubePlayerVersion = "1.2.2"
+    daggerVersion = "2.19"
 
     //test dependency version
     junitVersion = "4.12"
