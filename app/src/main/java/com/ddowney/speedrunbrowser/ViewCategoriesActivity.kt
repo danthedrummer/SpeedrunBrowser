@@ -16,9 +16,7 @@ import com.ddowney.speedrunbrowser.models.*
 import com.ddowney.speedrunbrowser.services.ServiceManager
 import com.ddowney.speedrunbrowser.storage.SharedPreferencesStorage
 import com.ddowney.speedrunbrowser.storage.SharedPreferencesStorage.Companion.FAVOURITES_KEY
-import com.google.gson.Gson
 import com.google.gson.GsonBuilder
-import com.google.gson.reflect.TypeToken
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.functions.Consumer
 import io.reactivex.schedulers.Schedulers
@@ -32,11 +30,11 @@ class ViewCategoriesActivity : AppCompatActivity() {
 
     private lateinit var storage: SharedPreferencesStorage
 
-    private lateinit var game : GameModel
+    private lateinit var game : Game
 
-    private lateinit var expListAdapter : ExpandingCategoryListAdapter
-    private lateinit var listHeaders: MutableList<CategoriesModel>
-    private var listChildren = mutableMapOf<String, List<LeaderboardModel.RunPosition>>()
+    private lateinit var expList : ExpandingCategoryListAdapter
+    private lateinit var listHeaders: MutableList<Categories>
+    private var listChildren = mutableMapOf<String, List<Leaderboard.RunPosition>>()
 
     private var lastExpandedGroup = -1
 
@@ -53,7 +51,7 @@ class ViewCategoriesActivity : AppCompatActivity() {
 
         val bundle = this.intent.extras
         if (bundle != null) {
-            game = bundle.getSerializable(GAME_EXTRA) as GameModel
+            game = bundle.getSerializable(GAME_EXTRA) as Game
         }
 
         game_toolbar.title = game.names.international
@@ -62,7 +60,7 @@ class ViewCategoriesActivity : AppCompatActivity() {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
 
-        val categoriesConsumer = Consumer<ResponseWrapperM<CategoriesModel>> { (data) ->
+        val categoriesConsumer = Consumer<ListRoot<Categories>> { (data) ->
             listHeaders = data.toMutableList()
             var responses = 0
 
@@ -70,7 +68,7 @@ class ViewCategoriesActivity : AppCompatActivity() {
                 val recordsObserver = ServiceManager.categoriesService.getRecordsForCategory(data[i].id, 5)
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
-                val recordsConsumer = Consumer<ResponseWrapperM<LeaderboardModel>> { record ->
+                val recordsConsumer = Consumer<ListRoot<Leaderboard>> { record ->
                     if (record.data.isEmpty()) {
                         listHeaders.remove(data[i])
                     } else {
@@ -116,7 +114,7 @@ class ViewCategoriesActivity : AppCompatActivity() {
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.game_menu, menu)
         this.menu = menu
-        val storedFavourites = storage.get(FAVOURITES_KEY, StoredList::class.java)
+        val storedFavourites = storage.get(FAVOURITES_KEY, Favourites::class.java)
         if (storedFavourites != null && storedFavourites.list.contains(game.id)) {
             showRemoveFavourite()
         }
@@ -149,10 +147,10 @@ class ViewCategoriesActivity : AppCompatActivity() {
      * Updates the user favourites by adding the game if it is not already
      * added to favourites or removing it if it is
      */
-    private fun updateFavourites(game : GameModel) : Int {
+    private fun updateFavourites(game : Game) : Int {
         val result: Int
 
-        val storedFavourites = storage.get(FAVOURITES_KEY, StoredList::class.java)
+        val storedFavourites = storage.get(FAVOURITES_KEY, Favourites::class.java)
         val updatedFavourites: MutableList<String> = storedFavourites?.list?.toMutableList() ?: mutableListOf()
         result = if (updatedFavourites.contains(game.id)) {
             updatedFavourites.remove(game.id)
@@ -162,7 +160,7 @@ class ViewCategoriesActivity : AppCompatActivity() {
             1
         }
 
-        storage.put(SharedPreferencesStorage.FAVOURITES_KEY, StoredList(updatedFavourites))
+        storage.put(SharedPreferencesStorage.FAVOURITES_KEY, Favourites(updatedFavourites))
         return result
     }
 
@@ -179,8 +177,8 @@ class ViewCategoriesActivity : AppCompatActivity() {
                 .map { listHeaders[it] }
                 .forEach { listHeaders.remove(it) }
 
-        expListAdapter = ExpandingCategoryListAdapter(this, listHeaders, listChildren)
-        expandable_category_list.setAdapter(expListAdapter)
+        expList = ExpandingCategoryListAdapter(this, listHeaders, listChildren)
+        expandable_category_list.setAdapter(expList)
 
         expandable_category_list.setOnChildClickListener { _, _, groupPosition, childPosition, _ ->
             val intent = Intent(this, ViewRunActivity::class.java)
@@ -192,7 +190,7 @@ class ViewCategoriesActivity : AppCompatActivity() {
             val pos : Int = childPosition + 1
             bundle.putInt(POSITION_EXTRA, pos)
 
-            val run : RunModel? = listChildren[cat]?.get(childPosition)?.run
+            val run : Run? = listChildren[cat]?.get(childPosition)?.run
             if (run != null) {
                 bundle.putSerializable(RUN_EXTRA, run)
                 bundle.putSerializable(GAME_EXTRA, game)

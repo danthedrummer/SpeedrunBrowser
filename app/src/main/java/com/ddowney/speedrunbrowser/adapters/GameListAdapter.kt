@@ -5,20 +5,20 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.ddowney.speedrunbrowser.R
-import com.ddowney.speedrunbrowser.models.GameModel
+import com.ddowney.speedrunbrowser.models.Game
 import kotlinx.android.synthetic.main.game_text_view.view.*
 
 
 /**
  * Created by Dan on 31/10/2017.
  */
-class GameListAdapter(private val data : List<GameModel>, private val itemClick : (GameModel) -> Unit)
+class GameListAdapter(private val data : List<Game>, private val itemClick : (Game) -> Unit)
     : RecyclerView.Adapter<GameListAdapter.ViewHolder>() {
 
-    class ViewHolder(itemView : View, private val itemClick : (GameModel) -> Unit)
+    class ViewHolder(itemView : View, private val itemClick : (Game) -> Unit)
         : RecyclerView.ViewHolder(itemView) {
 
-        fun bindGameModel(game : GameModel) {
+        fun bindGameModel(game : Game) {
             with(game) {
                 itemView.item_text.text = this.names.international
                 val platforms = game.platforms?.toString()
