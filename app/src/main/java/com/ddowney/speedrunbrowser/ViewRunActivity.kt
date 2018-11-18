@@ -14,7 +14,9 @@ import android.view.View
 import android.widget.Toast
 import com.ddowney.speedrunbrowser.ViewCategoriesActivity.Companion.GAME_EXTRA
 import com.ddowney.speedrunbrowser.models.*
-import com.ddowney.speedrunbrowser.services.ServiceManager
+import com.ddowney.speedrunbrowser.networking.ErrorConsumer
+import com.ddowney.speedrunbrowser.networking.UserProvider
+import com.ddowney.speedrunbrowser.networking.UserProviderImpl
 import com.ddowney.speedrunbrowser.storage.SharedPreferencesStorage
 import com.ddowney.speedrunbrowser.utils.TimeFormatter
 import com.google.android.youtube.player.YouTubeBaseActivity
@@ -26,6 +28,7 @@ import io.reactivex.functions.Consumer
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_view_run.*
 import kotlinx.android.synthetic.main.run_info_items.*
+import okhttp3.OkHttpClient
 
 class ViewRunActivity : YouTubeBaseActivity(), YouTubePlayer.OnInitializedListener, AppCompatCallback {
 
@@ -39,6 +42,8 @@ class ViewRunActivity : YouTubeBaseActivity(), YouTubePlayer.OnInitializedListen
     }
 
     private lateinit var storage: SharedPreferencesStorage
+    private lateinit var userProvider: UserProvider
+    private val errorConsumer = ErrorConsumer()
 
     private lateinit var youtubePlayer: YouTubePlayer
     private lateinit var delegate: AppCompatDelegate
@@ -64,6 +69,9 @@ class ViewRunActivity : YouTubeBaseActivity(), YouTubePlayer.OnInitializedListen
         val gson = GsonBuilder().create()
         storage = SharedPreferencesStorage(sharedPreferences, gson)
 
+        val client = OkHttpClient.Builder().build()
+        userProvider = UserProviderImpl(client, MainActivity.BASE_URL, gson)
+
         val bundle = this.intent.extras
         if (bundle != null) {
             game = bundle.getSerializable(GAME_EXTRA) as Game
@@ -81,7 +89,7 @@ class ViewRunActivity : YouTubeBaseActivity(), YouTubePlayer.OnInitializedListen
                     displayUi(bundle)
                 }
             } else {
-                val userObservable = ServiceManager.userService.getUserById(player.id)
+                val userObservable = userProvider.getUser(player.id)
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
 
@@ -92,7 +100,7 @@ class ViewRunActivity : YouTubeBaseActivity(), YouTubePlayer.OnInitializedListen
                         displayUi(bundle)
                     }
                 }
-                userObservable.subscribe(userConsumer, ServiceManager.errorConsumer)
+                userObservable.subscribe(userConsumer, errorConsumer)
             }
         }
 

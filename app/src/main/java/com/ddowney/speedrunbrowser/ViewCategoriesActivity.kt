@@ -13,7 +13,7 @@ import com.ddowney.speedrunbrowser.ViewRunActivity.Companion.POSITION_EXTRA
 import com.ddowney.speedrunbrowser.ViewRunActivity.Companion.RUN_EXTRA
 import com.ddowney.speedrunbrowser.adapters.ExpandingCategoryListAdapter
 import com.ddowney.speedrunbrowser.models.*
-import com.ddowney.speedrunbrowser.services.ServiceManager
+import com.ddowney.speedrunbrowser.networking.*
 import com.ddowney.speedrunbrowser.storage.SharedPreferencesStorage
 import com.ddowney.speedrunbrowser.storage.SharedPreferencesStorage.Companion.FAVOURITES_KEY
 import com.google.gson.GsonBuilder
@@ -21,6 +21,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.functions.Consumer
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_view_category.*
+import okhttp3.OkHttpClient
 
 class ViewCategoriesActivity : AppCompatActivity() {
 
@@ -29,6 +30,9 @@ class ViewCategoriesActivity : AppCompatActivity() {
     }
 
     private lateinit var storage: SharedPreferencesStorage
+    private lateinit var gameProvider: GameProvider
+    private lateinit var categoriesProvider: CategoriesProvider
+    private val errorConsumer = ErrorConsumer()
 
     private lateinit var game: Game
 
@@ -49,6 +53,10 @@ class ViewCategoriesActivity : AppCompatActivity() {
         val gson = GsonBuilder().create()
         storage = SharedPreferencesStorage(sharedPreferences, gson)
 
+        val client = OkHttpClient.Builder().build()
+        gameProvider = GameProviderImpl(client, MainActivity.BASE_URL, gson)
+        categoriesProvider = CategoriesProviderImpl(client, MainActivity.BASE_URL, gson)
+
         val bundle = this.intent.extras
         if (bundle != null) {
             game = bundle.getSerializable(GAME_EXTRA) as Game
@@ -56,7 +64,7 @@ class ViewCategoriesActivity : AppCompatActivity() {
 
         game_toolbar.title = game.names.international
 
-        val categoryObservable = ServiceManager.gameService.getCategoriesForGame(game.id)
+        val categoryObservable = gameProvider.getCategoriesForGame(game.id)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
 
@@ -65,7 +73,7 @@ class ViewCategoriesActivity : AppCompatActivity() {
             var responses = 0
 
             for (i in 0 until data.size) {
-                val recordsObserver = ServiceManager.categoriesService.getRecordsForCategory(data[i].id, 5)
+                val recordsObserver = categoriesProvider.getRecordsForCategory(data[i].id, 5)
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                 val recordsConsumer = Consumer<ListRoot<Leaderboard>> { record ->
@@ -83,11 +91,11 @@ class ViewCategoriesActivity : AppCompatActivity() {
                         expandable_category_list.visibility = View.VISIBLE
                     }
                 }
-                recordsObserver.subscribe(recordsConsumer, ServiceManager.errorConsumer)
+                recordsObserver.subscribe(recordsConsumer, errorConsumer)
             }
         }
 
-        categoryObservable.subscribe(categoriesConsumer, ServiceManager.errorConsumer)
+        categoryObservable.subscribe(categoriesConsumer, errorConsumer)
 
     }
 
