@@ -6,7 +6,7 @@ The application makes use of the [Speedrun.com api](https://github.com/speedrunc
 
 ### Contributing
 
-Please follow the guidelines outlined in (Contributing)[https://github.com/danthedrummer/SpeedrunBrowser/tree/master/.github/CONTRIBUTING.md] if you wish to help with development
+Please follow the guidelines outlined in [Contributing](https://github.com/danthedrummer/SpeedrunBrowser/tree/master/.github/CONTRIBUTING.md) if you wish to help with development
 
 ### Note
 
