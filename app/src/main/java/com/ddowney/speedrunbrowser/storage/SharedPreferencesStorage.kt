@@ -1,25 +1,20 @@
 package com.ddowney.speedrunbrowser.storage
 
-import android.content.Context
 import android.content.SharedPreferences
 import com.google.gson.Gson
 
 /**
  * [SharedPreferences] backed implementation of [Storage]. Uses [Gson] for serialisation.
  */
-class SharedPreferencesStorage(val context: Context) : Storage {
+class SharedPreferencesStorage(private val sharedPreferences: SharedPreferences,
+                               private val gson: Gson) : Storage {
 
     companion object {
-        private val PREFERENCES_NAME: String = "SpeedrunBrowserSharedPreferences"
+        const val PREFERENCES_NAME: String = "SpeedrunBrowserSharedPreferences"
         const val ALL_GAMES_KEY = "ALL_GAMES_KEY"
         const val ALL_PLATFORMS_KEY = "ALL_PLATFORMS_KEY"
         const val FAVOURITES_KEY = "FAVOURITES_KEY"
     }
-
-    private val sharedPreferences : SharedPreferences
-            = context.getSharedPreferences(PREFERENCES_NAME, Context.MODE_PRIVATE)
-
-    private val gson : Gson = Gson()
 
     override fun put(key: String, value: String) {
         val editor = sharedPreferences.edit()

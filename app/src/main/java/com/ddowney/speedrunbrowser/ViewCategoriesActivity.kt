@@ -1,5 +1,6 @@
 package com.ddowney.speedrunbrowser
 
+import android.content.Context
 import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
@@ -15,6 +16,8 @@ import com.ddowney.speedrunbrowser.models.*
 import com.ddowney.speedrunbrowser.services.ServiceManager
 import com.ddowney.speedrunbrowser.storage.SharedPreferencesStorage
 import com.ddowney.speedrunbrowser.storage.SharedPreferencesStorage.Companion.FAVOURITES_KEY
+import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.functions.Consumer
@@ -26,6 +29,8 @@ class ViewCategoriesActivity : AppCompatActivity() {
     companion object {
         val GAME_EXTRA = "GAME_EXTRA"
     }
+
+    private lateinit var storage: SharedPreferencesStorage
 
     private lateinit var game : GameModel
 
@@ -41,6 +46,10 @@ class ViewCategoriesActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_view_category)
         setSupportActionBar(game_toolbar)
+
+        val sharedPreferences = this.getSharedPreferences(SharedPreferencesStorage.PREFERENCES_NAME, Context.MODE_PRIVATE)
+        val gson = GsonBuilder().create()
+        storage = SharedPreferencesStorage(sharedPreferences, gson)
 
         val bundle = this.intent.extras
         if (bundle != null) {
@@ -107,7 +116,6 @@ class ViewCategoriesActivity : AppCompatActivity() {
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.game_menu, menu)
         this.menu = menu
-        val storage = SharedPreferencesStorage(this)
         val storedFavourites = storage.get(FAVOURITES_KEY, StoredList::class.java)
         if (storedFavourites != null && storedFavourites.list.contains(game.id)) {
             showRemoveFavourite()
@@ -143,7 +151,6 @@ class ViewCategoriesActivity : AppCompatActivity() {
      */
     private fun updateFavourites(game : GameModel) : Int {
         val result: Int
-        val storage = SharedPreferencesStorage(this)
 
         val storedFavourites = storage.get(FAVOURITES_KEY, StoredList::class.java)
         val updatedFavourites: MutableList<String> = storedFavourites?.list?.toMutableList() ?: mutableListOf()

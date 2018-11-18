@@ -20,6 +20,8 @@ ext {
 
     //test dependency version
     junitVersion = "4.12"
+    mockitoVersion = "2.13.0"
+    googleTruthVersion = "0.39"
 
     //android test dependency version
     testRunnerVersion = "1.0.1"
