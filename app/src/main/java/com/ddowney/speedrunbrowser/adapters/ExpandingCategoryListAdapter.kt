@@ -8,7 +8,7 @@ import android.view.ViewGroup
 import android.widget.BaseExpandableListAdapter
 import android.widget.TextView
 import com.ddowney.speedrunbrowser.R
-import com.ddowney.speedrunbrowser.models.Categories
+import com.ddowney.speedrunbrowser.models.Category
 import com.ddowney.speedrunbrowser.models.Leaderboard
 import com.ddowney.speedrunbrowser.utils.TimeFormatter
 
@@ -17,7 +17,7 @@ import com.ddowney.speedrunbrowser.utils.TimeFormatter
  */
 class ExpandingCategoryListAdapter(
         private val context: Context,
-        private val groupHeadings: List<Categories>,
+        private val groupHeadings: List<Category>,
         private val childData: Map<String, List<Leaderboard.RunPosition>>
 ) : BaseExpandableListAdapter() {
 
@@ -50,10 +50,10 @@ class ExpandingCategoryListAdapter(
         }
 
         val listHeader: TextView? = groupView?.findViewById(R.id.category_list_header)
-        listHeader?.text = (getGroup(groupPosition) as Categories).name
+        listHeader?.text = (getGroup(groupPosition) as Category).name
 
         val subtextView: TextView? = groupView?.findViewById(R.id.category_list_subtext)
-        val group: Categories = getGroup(groupPosition) as Categories
+        val group: Category = getGroup(groupPosition) as Category
         subtextView?.text = if (group.players.value == 1) {
             "Run has ${group.players.type} ${group.players.value} player"
         } else {

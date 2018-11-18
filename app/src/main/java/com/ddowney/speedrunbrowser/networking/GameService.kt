@@ -1,4 +1,4 @@
-package com.ddowney.speedrunbrowser.services
+package com.ddowney.speedrunbrowser.networking
 
 import com.ddowney.speedrunbrowser.BuildConfig
 import com.ddowney.speedrunbrowser.models.Category
@@ -14,10 +14,7 @@ interface GameService {
     fun getGames(@QueryMap options: Map<String, String>): Observable<ListRoot<Game>>
 
     @Headers("user-agent: ${BuildConfig.USER_AGENT_HEADER}")
-    @GET("api/v1/games")
-    fun searchForGamesByName(@Query("name") name: String): Observable<ListRoot<Game>>
-
-    @Headers("user-agent: ${BuildConfig.USER_AGENT_HEADER}")
     @GET("api/v1/games/{id}/categories")
     fun getCategoriesForGame(@Path("id") id: String): Observable<ListRoot<Category>>
+
 }

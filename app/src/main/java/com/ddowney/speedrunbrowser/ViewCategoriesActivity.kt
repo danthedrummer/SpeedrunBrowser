@@ -33,7 +33,7 @@ class ViewCategoriesActivity : AppCompatActivity() {
     private lateinit var game: Game
 
     private lateinit var expList: ExpandingCategoryListAdapter
-    private lateinit var listHeaders: MutableList<Categories>
+    private lateinit var listHeaders: MutableList<Category>
     private var listChildren = mutableMapOf<String, List<Leaderboard.RunPosition>>()
 
     private var lastExpandedGroup = -1
@@ -60,7 +60,7 @@ class ViewCategoriesActivity : AppCompatActivity() {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
 
-        val categoriesConsumer = Consumer<ListRoot<Categories>> { (data) ->
+        val categoriesConsumer = Consumer<ListRoot<Category>> { (data) ->
             listHeaders = data.toMutableList()
             var responses = 0
 

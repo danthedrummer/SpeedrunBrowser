@@ -185,7 +185,7 @@ class MainActivity : AppCompatActivity() {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
 
-        val categoriesConsumer = Consumer<ListRoot<Categories>> { (categories) ->
+        val categoriesConsumer = Consumer<ListRoot<Category>> { (categories) ->
             val randomCategory = categories[random.nextInt(categories.size)]
 
             val recordsObserver = ServiceManager.categoriesService.getRecordsForCategory(randomCategory.id, 1)
