@@ -1,44 +1,36 @@
 package com.ddowney.speedrunbrowser.storage
 
-import android.content.Context
-import android.content.SharedPreferences
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
-
-/**
- * Created by Dan on 19/12/2017.
- */
-class Storage(val context: Context) {
-
-    companion object {
-        private val PREFERENCES: String = "SpeedrunBrowserPreferences"
-        val ALL_GAMES_KEY = "ALL_GAMES_KEY"
-        val ALL_PLATFORMS_KEY = "ALL_PLATFORMS_KEY"
-        val FAVOURITES_KEY = "FAVOURITES_KEY"
-    }
-
-    private val sharedPrefs : SharedPreferences
-            = context.getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE)
-
-    private val gson : Gson = Gson()
+interface Storage {
 
     /**
-     * Reads list from storage using the specified key
+     * Store the given string [value] for the given [key]
      */
-    fun <T> readListFromStorage(key : String, token: TypeToken<List<T>>) : List<T> {
-        val storedString = sharedPrefs.getString(key, "")
-        if (storedString.isEmpty()) {
-            return listOf()
-        }
-        return gson.fromJson(storedString, token.type)
-    }
+    fun put(key: String, value: String)
 
     /**
-     * Write the specified list to shared preferences
+     * Store the given [value] for the given [key].
+     * The implementation should handle serialisation.
      */
-    fun <T> writeListToStorage(key : String, data : List<T>, token: TypeToken<List<T>>) {
-        val editor = sharedPrefs.edit()
-        editor.putString(key, gson.toJson(data, token.type))
-        editor.apply()
-    }
+    fun put(key: String, value: Any)
+
+    /**
+     * Retrieves the [String] stored for the given [key] or null if it doesn't exist.
+     */
+    fun get(key: String): String?
+
+    /**
+     * Retrieves the object stored for the given [key] or null if it doesn't exist.
+     * The implementation should handle deserialisation.
+     */
+    fun <T> get(key: String, clazz: Class<T>): T?
+
+    /**
+     * Removes the value for the given [key]
+     */
+    fun remove(key: String)
+
+    /**
+     * Removes all values from storage
+     */
+    fun clear()
 }

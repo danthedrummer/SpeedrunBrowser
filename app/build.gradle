@@ -25,6 +25,9 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    sourceSets {
+        test.java.srcDirs += 'src/test/kotlin'
+    }
 }
 
 dependencies {
@@ -41,6 +44,8 @@ dependencies {
     implementation group: "com.github.tommus", name: "youtube-android-player-api", version: rootProject.youtubePlayerVersion
 
     testImplementation group: "junit", name: "junit", version: rootProject.junitVersion
+    testImplementation group: "org.mockito", name: "mockito-core", version: rootProject.ext.mockitoVersion
+    testImplementation group: "com.google.truth", name: "truth", version: rootProject.ext.googleTruthVersion
 
     androidTestImplementation group: "com.android.support.test", name: "runner", version: rootProject.testRunnerVersion
     androidTestImplementation group: "com.android.support.test.espresso", name: "espresso-core", version: rootProject.espressoCoreVersion
