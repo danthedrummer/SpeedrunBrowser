@@ -30,15 +30,15 @@ class ViewCategoriesActivity : AppCompatActivity() {
 
     private lateinit var storage: SharedPreferencesStorage
 
-    private lateinit var game : Game
+    private lateinit var game: Game
 
-    private lateinit var expList : ExpandingCategoryListAdapter
+    private lateinit var expList: ExpandingCategoryListAdapter
     private lateinit var listHeaders: MutableList<Categories>
     private var listChildren = mutableMapOf<String, List<Leaderboard.RunPosition>>()
 
     private var lastExpandedGroup = -1
 
-    private lateinit var menu : Menu
+    private lateinit var menu: Menu
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -147,7 +147,7 @@ class ViewCategoriesActivity : AppCompatActivity() {
      * Updates the user favourites by adding the game if it is not already
      * added to favourites or removing it if it is
      */
-    private fun updateFavourites(game : Game) : Int {
+    private fun updateFavourites(game: Game): Int {
         val result: Int
 
         val storedFavourites = storage.get(FAVOURITES_KEY, Favourites::class.java)

@@ -15,5 +15,5 @@ interface UserService {
 
     @Headers("user-agent: ${BuildConfig.USER_AGENT_HEADER}")
     @GET("api/v1/users/{id}")
-    fun getUserById(@Path("id") id : String) : Observable<ObjectRoot<User>>
+    fun getUserById(@Path("id") id: String): Observable<ObjectRoot<User>>
 }

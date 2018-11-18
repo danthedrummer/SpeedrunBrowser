@@ -13,5 +13,8 @@ interface CategoriesService {
 
     @Headers("user-agent: $USER_AGENT_HEADER")
     @GET("api/v1/categories/{id}/records")
-    fun getRecordsForCategory(@Path("id") id : String, @Query("top") top : Int) : Observable<ListRoot<Leaderboard>>
+    fun getRecordsForCategory(
+            @Path("id") id: String,
+            @Query("top") top: Int
+    ): Observable<ListRoot<Leaderboard>>
 }

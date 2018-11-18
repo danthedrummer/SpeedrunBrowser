@@ -12,11 +12,15 @@ import kotlinx.android.synthetic.main.game_text_view.view.*
 /**
  * Created by Dan on 31/10/2017.
  */
-class GameListAdapter(private val data : List<Game>, private val itemClick : (Game) -> Unit)
-    : RecyclerView.Adapter<GameListAdapter.ViewHolder>() {
+class GameListAdapter(
+        private val data: List<Game>,
+        private val itemClick: (Game) -> Unit
+) : RecyclerView.Adapter<GameListAdapter.ViewHolder>() {
 
-    class ViewHolder(itemView : View, private val itemClick : (Game) -> Unit)
-        : RecyclerView.ViewHolder(itemView) {
+    class ViewHolder(
+            itemView: View,
+            private val itemClick: (Game) -> Unit
+    ) : RecyclerView.ViewHolder(itemView) {
 
         fun bindGameModel(game : Game) {
             with(game) {
@@ -28,7 +32,7 @@ class GameListAdapter(private val data : List<Game>, private val itemClick : (Ga
         }
     }
 
-    override fun onCreateViewHolder(parent : ViewGroup, viewType : Int): ViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val v = LayoutInflater
                 .from(parent.context)
                 .inflate(R.layout.game_text_view, parent, false)

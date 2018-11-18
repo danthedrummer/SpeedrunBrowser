@@ -42,10 +42,10 @@ class MainActivity : AppCompatActivity() {
 
     private val random = Random()
 
-    private lateinit var gameListAdapter : GameListAdapter
+    private lateinit var gameListAdapter: GameListAdapter
 
-    private var gameList : List<Game> = listOf()
-    private var platformList : List<Platform> = listOf()
+    private var gameList: List<Game> = listOf()
+    private var platformList: List<Platform> = listOf()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

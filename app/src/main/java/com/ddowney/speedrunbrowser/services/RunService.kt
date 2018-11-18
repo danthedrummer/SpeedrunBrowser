@@ -15,5 +15,5 @@ interface RunService {
 
     @Headers("user-agent: ${BuildConfig.USER_AGENT_HEADER}")
     @GET("api/v1/runs")
-    fun getRunsForGame(@Query("game") gameId : String) : Observable<ListRoot<Run>>
+    fun getRunsForGame(@Query("game") gameId: String): Observable<ListRoot<Run>>
 }

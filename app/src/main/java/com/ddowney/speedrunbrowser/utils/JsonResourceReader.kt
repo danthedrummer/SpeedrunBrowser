@@ -16,27 +16,27 @@ import com.google.gson.reflect.TypeToken
  * @param resources An application {@link Resources} object
  * @param id The id of the resource to be loaded
  */
-class JsonResourceReader (resources : Resources, val id : Int, val gson : Gson) {
+class JsonResourceReader(resources: Resources, val id: Int, val gson: Gson) {
     val LOG_TAG = "JsonResourceReader"
     private var jsonString : String
 
     init {
-        val resourceReader : InputStream = resources.openRawResource(id)
-        val writer : Writer = StringWriter()
+        val resourceReader: InputStream = resources.openRawResource(id)
+        val writer: Writer = StringWriter()
 
         try {
             val reader = BufferedReader(InputStreamReader(resourceReader, "UTF-8"))
-            var line : String? = reader.readLine()
+            var line: String? = reader.readLine()
             while (line != null) {
                 writer.write(line)
                 line = reader.readLine()
             }
-        } catch (e : IOException) {
+        } catch (e: IOException) {
             Log.e(LOG_TAG, "Exception using JsonResourceReader", e)
         } finally {
             try {
                 resourceReader.close()
-            } catch (e : IOException) {
+            } catch (e: IOException) {
 
             }
         }
@@ -54,7 +54,7 @@ class JsonResourceReader (resources : Resources, val id : Int, val gson : Gson) 
      *
      * @return An object of type TypeToken<T> populated by Gson
      */
-    fun <T> constructUsingGson(token : TypeToken<T>): T {
+    fun <T> constructUsingGson(token: TypeToken<T>): T {
         return gson.fromJson(jsonString, token.type)
     }
 }

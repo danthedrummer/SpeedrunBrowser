@@ -11,13 +11,13 @@ interface GameService {
 
     @Headers("user-agent: ${BuildConfig.USER_AGENT_HEADER}")
     @GET("api/v1/games")
-    fun getGames(@QueryMap options : Map<String, String>) : Observable<ListRoot<Game>>
+    fun getGames(@QueryMap options: Map<String, String>): Observable<ListRoot<Game>>
 
     @Headers("user-agent: ${BuildConfig.USER_AGENT_HEADER}")
     @GET("api/v1/games")
-    fun searchForGamesByName(@Query("name") name : String) : Observable<ListRoot<Game>>
+    fun searchForGamesByName(@Query("name") name: String): Observable<ListRoot<Game>>
 
     @Headers("user-agent: ${BuildConfig.USER_AGENT_HEADER}")
     @GET("api/v1/games/{id}/categories")
-    fun getCategoriesForGame(@Path("id") id : String) : Observable<ListRoot<Categories>>
+    fun getCategoriesForGame(@Path("id") id: String): Observable<ListRoot<Categories>>
 }

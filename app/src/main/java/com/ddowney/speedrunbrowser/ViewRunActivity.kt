@@ -16,7 +16,7 @@ import com.ddowney.speedrunbrowser.ViewCategoriesActivity.Companion.GAME_EXTRA
 import com.ddowney.speedrunbrowser.models.*
 import com.ddowney.speedrunbrowser.services.ServiceManager
 import com.ddowney.speedrunbrowser.storage.SharedPreferencesStorage
-import com.ddowney.speedrunbrowser.utils.FormattingTools
+import com.ddowney.speedrunbrowser.utils.TimeFormatter
 import com.google.android.youtube.player.YouTubeBaseActivity
 import com.google.android.youtube.player.YouTubeInitializationResult
 import com.google.android.youtube.player.YouTubePlayer
@@ -40,15 +40,15 @@ class ViewRunActivity : YouTubeBaseActivity(), YouTubePlayer.OnInitializedListen
 
     private lateinit var storage: SharedPreferencesStorage
 
-    private lateinit var youtubePlayer : YouTubePlayer
-    private lateinit var delegate : AppCompatDelegate
-    private var playerInitResult : YouTubeInitializationResult? = null
+    private lateinit var youtubePlayer: YouTubePlayer
+    private lateinit var delegate: AppCompatDelegate
+    private var playerInitResult: YouTubeInitializationResult? = null
 
-    private lateinit var run : Run
+    private lateinit var run: Run
 
-    private lateinit var game : Game
+    private lateinit var game: Game
 
-    private lateinit var menu : Menu
+    private lateinit var menu: Menu
 
     private val players = mutableListOf<User>()
 
@@ -127,7 +127,7 @@ class ViewRunActivity : YouTubeBaseActivity(), YouTubePlayer.OnInitializedListen
         }
         run_place_holder.visibility = View.VISIBLE
 
-        val formattingTool = FormattingTools()
+        val formattingTool = TimeFormatter()
         vra_run_time.text = formattingTool.getReadableTime(run.times.primary_t)
         time_holder.visibility = View.VISIBLE
 
@@ -261,7 +261,7 @@ class ViewRunActivity : YouTubeBaseActivity(), YouTubePlayer.OnInitializedListen
      * Updates the user favourites by adding the game if it is not already
      * added to favourites or removing it if it is
      */
-    private fun updateFavourites(game : Game) : Int {
+    private fun updateFavourites(game: Game): Int {
         val result: Int
 
         val storedFavourites = storage.get(SharedPreferencesStorage.FAVOURITES_KEY, Favourites::class.java)
