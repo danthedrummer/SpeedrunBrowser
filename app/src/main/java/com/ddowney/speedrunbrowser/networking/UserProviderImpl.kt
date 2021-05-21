@@ -7,15 +7,15 @@ import io.reactivex.Observable
 import okhttp3.OkHttpClient
 
 class UserProviderImpl(
-        client: OkHttpClient,
-        baseUrl: String,
-        gson: Gson
+  client: OkHttpClient,
+  baseUrl: String,
+  gson: Gson,
 ) : BaseProvider(client, baseUrl, gson), UserProvider {
 
-    private val service = retrofit.create(UserService::class.java)
+  private val service = retrofit.create(UserService::class.java)
 
-    override fun getUser(id: String): Observable<ObjectRoot<User>> {
-        return service.getUser(id)
-    }
+  override fun getUser(id: String): Observable<ObjectRoot<User>> {
+    return service.getUser(id)
+  }
 
 }

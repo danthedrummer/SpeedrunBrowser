@@ -7,15 +7,15 @@ import io.reactivex.Observable
 import okhttp3.OkHttpClient
 
 class RunProviderImpl(
-        client: OkHttpClient,
-        baseUrl: String,
-        gson: Gson
+  client: OkHttpClient,
+  baseUrl: String,
+  gson: Gson,
 ) : BaseProvider(client, baseUrl, gson), RunProvider {
 
-    private val service = retrofit.create(RunService::class.java)
+  private val service = retrofit.create(RunService::class.java)
 
-    override fun getRunsForGame(gameId: String): Observable<ListRoot<Run>> {
-        return service.getRunsForGame(gameId)
-    }
+  override fun getRunsForGame(gameId: String): Observable<ListRoot<Run>> {
+    return service.getRunsForGame(gameId)
+  }
 
 }

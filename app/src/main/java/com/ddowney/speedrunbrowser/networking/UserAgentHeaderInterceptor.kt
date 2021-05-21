@@ -11,15 +11,15 @@ import okhttp3.Response
  */
 class UserAgentHeaderInterceptor(private val headerValue: String) : Interceptor {
 
-    companion object {
-        const val USER_AGENT_KEY = "user-agent"
-    }
+  companion object {
+    const val USER_AGENT_KEY = "user-agent"
+  }
 
-    override fun intercept(chain: Interceptor.Chain): Response {
-        val requestHeaderBuilder = chain.request().newBuilder()
+  override fun intercept(chain: Interceptor.Chain): Response {
+    val requestHeaderBuilder = chain.request().newBuilder()
 
-        requestHeaderBuilder.addHeader(USER_AGENT_KEY, headerValue)
+    requestHeaderBuilder.addHeader(USER_AGENT_KEY, headerValue)
 
-        return chain.proceed(requestHeaderBuilder.build())
-    }
+    return chain.proceed(requestHeaderBuilder.build())
+  }
 }

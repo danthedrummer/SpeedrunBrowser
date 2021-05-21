@@ -12,11 +12,11 @@ import retrofit2.converter.gson.GsonConverterFactory
  */
 open class BaseProvider(client: OkHttpClient, baseUrl: String, gson: Gson) {
 
-    protected val retrofit: Retrofit = Retrofit.Builder()
-            .baseUrl(baseUrl)
-            .client(client)
-            .addConverterFactory(GsonConverterFactory.create(gson))
-            .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-            .build()
+  protected val retrofit: Retrofit = Retrofit.Builder()
+    .baseUrl(baseUrl)
+    .client(client)
+    .addConverterFactory(GsonConverterFactory.create(gson))
+    .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+    .build()
 
 }

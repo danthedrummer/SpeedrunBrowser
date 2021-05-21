@@ -11,11 +11,11 @@ import retrofit2.http.Query
 
 interface CategoriesService {
 
-    @Headers("user-agent: ${BuildConfig.USER_AGENT_HEADER}")
-    @GET("api/v1/categories/{id}/records")
-    fun getRecordsForCategory(
-            @Path("id") id: String,
-            @Query("top") top: Int
-    ): Observable<ListRoot<Leaderboard>>
+  @Headers("user-agent: ${BuildConfig.USER_AGENT_HEADER}")
+  @GET("api/v1/categories/{id}/records")
+  fun getRecordsForCategory(
+    @Path("id") id: String,
+    @Query("top") top: Int,
+  ): Observable<ListRoot<Leaderboard>>
 
 }

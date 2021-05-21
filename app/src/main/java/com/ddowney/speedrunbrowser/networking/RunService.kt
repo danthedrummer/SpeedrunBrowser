@@ -10,8 +10,8 @@ import retrofit2.http.Query
 
 interface RunService {
 
-    @Headers("user-agent: ${BuildConfig.USER_AGENT_HEADER}")
-    @GET("api/v1/runs")
-    fun getRunsForGame(@Query("game") gameId: String): Observable<ListRoot<Run>>
+  @Headers("user-agent: ${BuildConfig.USER_AGENT_HEADER}")
+  @GET("api/v1/runs")
+  fun getRunsForGame(@Query("game") gameId: String): Observable<ListRoot<Run>>
 
 }

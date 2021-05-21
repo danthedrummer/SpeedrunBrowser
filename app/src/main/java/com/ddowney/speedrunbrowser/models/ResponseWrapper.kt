@@ -6,6 +6,6 @@ package com.ddowney.speedrunbrowser.models
  *
  * The type of this data could be a Run, a Game, etc.
  */
-data class ListRoot <out T> (val data: List<T>)
+data class ListRoot<out T>(val data: List<T>)
 
-data class ObjectRoot <out T> (val data: T)
+data class ObjectRoot<out T>(val data: T)

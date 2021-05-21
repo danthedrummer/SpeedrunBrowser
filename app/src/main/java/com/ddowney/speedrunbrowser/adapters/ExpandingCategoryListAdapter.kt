@@ -16,85 +16,87 @@ import com.ddowney.speedrunbrowser.utils.TimeFormatter
  * Expandable list adapter
  */
 class ExpandingCategoryListAdapter(
-        private val context: Context,
-        private val groupHeadings: List<Category>,
-        private val childData: Map<String, List<Leaderboard.RunPosition>>
+  private val context: Context,
+  private val groupHeadings: List<Category>,
+  private val childData: Map<String, List<Leaderboard.RunPosition>>,
 ) : BaseExpandableListAdapter() {
 
-    override fun getGroup(groupPosition: Int): Any {
-        return groupHeadings[groupPosition]
+  override fun getGroup(groupPosition: Int): Any {
+    return groupHeadings[groupPosition]
+  }
+
+
+  override fun isChildSelectable(p0: Int, p1: Int): Boolean {
+    return true
+  }
+
+  override fun hasStableIds(): Boolean {
+    return false
+  }
+
+  override fun getGroupView(
+    groupPosition: Int,
+    isExpanded: Boolean,
+    view: View?,
+    parent: ViewGroup?,
+  ): View? {
+
+    var groupView = view
+
+    if (groupView == null) {
+      val inflater: LayoutInflater =
+        context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+      groupView = inflater.inflate(R.layout.category_list_group, null)
     }
 
+    val listHeader: TextView? = groupView?.findViewById(R.id.category_list_header)
+    listHeader?.text = (getGroup(groupPosition) as Category).name
 
-    override fun isChildSelectable(p0: Int, p1: Int): Boolean {
-        return true
+    val subtextView: TextView? = groupView?.findViewById(R.id.category_list_subtext)
+    val group: Category = getGroup(groupPosition) as Category
+    subtextView?.text = if (group.players.value == 1) {
+      "Run has ${group.players.type} ${group.players.value} player"
+    } else {
+      "Run has ${group.players.type} ${group.players.value} players"
     }
 
-    override fun hasStableIds(): Boolean {
-        return false
+    return groupView
+  }
+
+  override fun getChildrenCount(groupPosition: Int): Int {
+    return childData[groupHeadings[groupPosition].name]?.size ?: 0
+  }
+
+  override fun getChild(groupPosition: Int, childPosition: Int): Any? {
+    return childData[groupHeadings[groupPosition].name]?.get(childPosition)
+  }
+
+  override fun getGroupId(groupPosition: Int): Long {
+    return groupPosition.toLong()
+  }
+
+  override fun getChildView(
+    groupPosition: Int, childPosition: Int, isLastChild: Boolean,
+    view: View?, parent: ViewGroup?,
+  ): View? {
+
+    var childView = view
+    if (childView == null) {
+      val inflater: LayoutInflater =
+        context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+      childView = inflater.inflate(R.layout.category_list_item, null)
     }
 
-    override fun getGroupView(
-            groupPosition: Int,
-            isExpanded: Boolean,
-            view: View?,
-            parent: ViewGroup?
-    ): View? {
+    val child: Leaderboard.RunPosition = (getChild(groupPosition, childPosition) as Leaderboard.RunPosition)
 
-        var groupView = view
-
-        if (groupView == null) {
-            val inflater: LayoutInflater =
-                    context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-            groupView = inflater.inflate(R.layout.category_list_group, null)
-        }
-
-        val listHeader: TextView? = groupView?.findViewById(R.id.category_list_header)
-        listHeader?.text = (getGroup(groupPosition) as Category).name
-
-        val subtextView: TextView? = groupView?.findViewById(R.id.category_list_subtext)
-        val group: Category = getGroup(groupPosition) as Category
-        subtextView?.text = if (group.players.value == 1) {
-            "Run has ${group.players.type} ${group.players.value} player"
-        } else {
-            "Run has ${group.players.type} ${group.players.value} players"
-        }
-
-        return groupView
+    val recordPosition: TextView? = childView?.findViewById(R.id.record_position)
+    @SuppressLint("SetTextI18n")
+    when (child.place) {
+      1 -> recordPosition?.text = "${child.place}st"
+      2 -> recordPosition?.text = "${child.place}nd"
+      3 -> recordPosition?.text = "${child.place}rd"
+      else -> recordPosition?.text = "${child.place}th"
     }
-
-    override fun getChildrenCount(groupPosition: Int): Int {
-        return childData[groupHeadings[groupPosition].name]?.size ?: 0
-    }
-
-    override fun getChild(groupPosition: Int, childPosition: Int): Any? {
-        return childData[groupHeadings[groupPosition].name]?.get(childPosition)
-    }
-
-    override fun getGroupId(groupPosition: Int): Long {
-        return groupPosition.toLong()
-    }
-
-    override fun getChildView(groupPosition: Int, childPosition: Int, isLastChild: Boolean,
-                              view: View?, parent: ViewGroup?): View? {
-
-        var childView = view
-        if (childView == null) {
-            val inflater: LayoutInflater =
-                    context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-            childView = inflater.inflate(R.layout.category_list_item, null)
-        }
-
-        val child: Leaderboard.RunPosition = (getChild(groupPosition, childPosition) as Leaderboard.RunPosition)
-
-        val recordPosition: TextView? = childView?.findViewById(R.id.record_position)
-        @SuppressLint("SetTextI18n")
-        when(child.place) {
-            1 -> recordPosition?.text = "${child.place}st"
-            2 -> recordPosition?.text = "${child.place}nd"
-            3 -> recordPosition?.text = "${child.place}rd"
-            else -> recordPosition?.text = "${child.place}th"
-        }
 
 //        val recordRunner : TextView? = childView?.findViewById(R.id.record_runner)
 //        if (child.run.players[0].name != "") {
@@ -103,19 +105,19 @@ class ExpandingCategoryListAdapter(
 //            recordRunner?.text = child.run.players[0].id
 //        }
 
-        val recordTime: TextView? = childView?.findViewById(R.id.record_time)
-        val formatter = TimeFormatter()
-        recordTime?.text = formatter.getReadableTime(child.run.times.primary_t)
+    val recordTime: TextView? = childView?.findViewById(R.id.record_time)
+    val formatter = TimeFormatter()
+    recordTime?.text = formatter.getReadableTime(child.run.times.primary_t)
 
-        return childView
-    }
+    return childView
+  }
 
-    override fun getChildId(groupPosition: Int, childPosition: Int): Long {
-        return childPosition.toLong()
-    }
+  override fun getChildId(groupPosition: Int, childPosition: Int): Long {
+    return childPosition.toLong()
+  }
 
-    override fun getGroupCount(): Int {
-        return groupHeadings.size
-    }
+  override fun getGroupCount(): Int {
+    return groupHeadings.size
+  }
 
 }

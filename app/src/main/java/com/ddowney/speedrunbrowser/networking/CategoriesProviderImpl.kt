@@ -7,15 +7,15 @@ import io.reactivex.Observable
 import okhttp3.OkHttpClient
 
 class CategoriesProviderImpl(
-        client: OkHttpClient,
-        baseUrl: String,
-        gson: Gson
+  client: OkHttpClient,
+  baseUrl: String,
+  gson: Gson,
 ) : BaseProvider(client, baseUrl, gson), CategoriesProvider {
 
-    private val service = retrofit.create(CategoriesService::class.java)
+  private val service = retrofit.create(CategoriesService::class.java)
 
-    override fun getRecordsForCategory(id: String, top: Int): Observable<ListRoot<Leaderboard>> {
-        return service.getRecordsForCategory(id, top)
-    }
+  override fun getRecordsForCategory(id: String, top: Int): Observable<ListRoot<Leaderboard>> {
+    return service.getRecordsForCategory(id, top)
+  }
 
 }

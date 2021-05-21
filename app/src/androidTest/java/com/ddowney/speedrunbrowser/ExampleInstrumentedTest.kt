@@ -1,8 +1,8 @@
 package com.ddowney.speedrunbrowser
 
-import android.support.test.InstrumentationRegistry
-import android.support.test.runner.AndroidJUnit4
 
+import androidx.test.InstrumentationRegistry.getTargetContext
+import androidx.test.runner.AndroidJUnit4
 import org.junit.Test
 import org.junit.runner.RunWith
 
@@ -18,7 +18,7 @@ class ExampleInstrumentedTest {
     @Test
     fun useAppContext() {
         // Context of the app under test.
-        val appContext = InstrumentationRegistry.getTargetContext()
+        val appContext = getTargetContext()
         assertEquals("ddowney.com.speedrunbrowser", appContext.packageName)
     }
 }

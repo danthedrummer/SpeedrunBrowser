@@ -6,9 +6,9 @@ import io.reactivex.Observable
 
 interface UserProvider {
 
-    /**
-     * Gets the [User] for the given user [id]
-     */
-    fun getUser(id: String): Observable<ObjectRoot<User>>
+  /**
+   * Gets the [User] for the given user [id]
+   */
+  fun getUser(id: String): Observable<ObjectRoot<User>>
 
 }

@@ -10,8 +10,8 @@ import retrofit2.http.Path
 
 interface UserService {
 
-    @Headers("user-agent: ${BuildConfig.USER_AGENT_HEADER}")
-    @GET("api/v1/users/{id}")
-    fun getUser(@Path("id") id: String): Observable<ObjectRoot<User>>
+  @Headers("user-agent: ${BuildConfig.USER_AGENT_HEADER}")
+  @GET("api/v1/users/{id}")
+  fun getUser(@Path("id") id: String): Observable<ObjectRoot<User>>
 
 }

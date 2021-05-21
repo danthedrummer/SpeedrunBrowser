@@ -6,9 +6,9 @@ import io.reactivex.Observable
 
 interface RunProvider {
 
-    /**
-     * Gets all [Run]s for a game specified by it's [gameId]
-     */
-    fun getRunsForGame(gameId: String): Observable<ListRoot<Run>>
+  /**
+   * Gets all [Run]s for a game specified by it's [gameId]
+   */
+  fun getRunsForGame(gameId: String): Observable<ListRoot<Run>>
 
 }
