@@ -4,6 +4,7 @@ import android.app.SearchManager
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
@@ -16,6 +17,7 @@ import com.ddowney.speedrunbrowser.ViewRunActivity.Companion.POSITION_EXTRA
 import com.ddowney.speedrunbrowser.ViewRunActivity.Companion.RANDOM_RUN_EXTRA
 import com.ddowney.speedrunbrowser.adapters.GameListAdapter
 import com.ddowney.speedrunbrowser.databinding.ActivityMainBinding
+import com.ddowney.speedrunbrowser.databinding.ActivityViewCategoryBinding
 import com.ddowney.speedrunbrowser.databinding.GameTextViewBinding
 import com.ddowney.speedrunbrowser.models.*
 import com.ddowney.speedrunbrowser.networking.*
@@ -51,13 +53,14 @@ class MainActivity : AppCompatActivity() {
   private var platformList: List<Platform> = listOf()
 
   private lateinit var binding: ActivityMainBinding
-  private lateinit var gameBinding: GameTextViewBinding
 
   override fun onCreate(savedInstanceState: Bundle?) {
     val component = (this.application as SpeedrunBrowser).component
     gameProvider = component.gameProvider()
     categoriesProvider = component.categoriesProvider()
     storage = component.storage()
+
+    binding = ActivityMainBinding.inflate(layoutInflater)
 
     super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_main)
@@ -86,12 +89,17 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    changeGameListData(gameList)
+    gameListAdapter = GameListAdapter(gameList) { game ->
+      val runIntent = Intent(this, ViewCategoriesActivity::class.java)
+      val bundle = Bundle()
+      bundle.putSerializable(GAME_EXTRA, game)
+      runIntent.putExtras(bundle)
+      startActivity(runIntent)
+    }
 
     binding.mainRecycler.setHasFixedSize(true)
     binding.mainRecycler.layoutManager = LinearLayoutManager(this)
     binding.mainRecycler.adapter = gameListAdapter
-    binding.mainRecycler.hasPendingAdapterUpdates()
 
     binding.randomFab.setOnClickListener {
       pickRandomRun()
@@ -175,14 +183,7 @@ class MainActivity : AppCompatActivity() {
    * Updates the recycler view adapter
    */
   private fun changeGameListData(data: List<Game>) {
-    gameListAdapter = GameListAdapter(data, gameBinding) { game ->
-      val runIntent = Intent(this, ViewCategoriesActivity::class.java)
-      val bundle = Bundle()
-      bundle.putSerializable(GAME_EXTRA, game)
-      runIntent.putExtras(bundle)
-      startActivity(runIntent)
-    }
-    binding.mainRecycler.adapter = gameListAdapter
+    gameListAdapter.updateData(data)
   }
 
   /**

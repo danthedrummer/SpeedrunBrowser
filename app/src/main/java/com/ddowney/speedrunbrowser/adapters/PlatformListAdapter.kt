@@ -14,14 +14,12 @@ import com.ddowney.speedrunbrowser.models.Platform
 class PlatformListAdapter(
   private val data: List<Platform>,
   private val itemClick: (Platform) -> Unit,
-  private val binding: GameTextViewBinding,
 ) : RecyclerView.Adapter<PlatformListAdapter.ViewHolder>() {
 
   class ViewHolder(
-    itemView: View,
     private val itemClick: (Platform) -> Unit,
     private val binding: GameTextViewBinding,
-  ) : RecyclerView.ViewHolder(itemView) {
+  ) : RecyclerView.ViewHolder(binding.root) {
 
     fun bindPlatformModel(platform: Platform) {
       with(platform) {
@@ -33,10 +31,8 @@ class PlatformListAdapter(
   }
 
   override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-    val v = LayoutInflater
-      .from(parent.context)
-      .inflate(R.layout.game_text_view, parent, false)
-    return ViewHolder(v, itemClick, binding)
+    val binding = GameTextViewBinding.inflate(LayoutInflater.from(parent.context))
+    return ViewHolder(itemClick, binding)
   }
 
   override fun onBindViewHolder(holder: ViewHolder, position: Int) {

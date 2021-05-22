@@ -7,6 +7,7 @@ import dagger.Module
 import dagger.Provides
 import dagger.Reusable
 import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 import java.util.concurrent.TimeUnit
 
 @Module
@@ -34,6 +35,7 @@ class NetworkModule {
   fun provideBaseOkHttpClient(userAgentHeader: UserAgentHeaderInterceptor): OkHttpClient {
     return OkHttpClient.Builder()
       .addInterceptor(userAgentHeader)
+      .addInterceptor(HttpLoggingInterceptor())
       .connectTimeout(30, TimeUnit.SECONDS)
       .readTimeout(30, TimeUnit.SECONDS)
       .writeTimeout(30, TimeUnit.SECONDS)

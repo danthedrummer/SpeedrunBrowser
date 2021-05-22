@@ -1,5 +1,6 @@
 package com.ddowney.speedrunbrowser.adapters
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,20 +14,24 @@ import com.ddowney.speedrunbrowser.models.Game
  * Created by Dan on 31/10/2017.
  */
 class GameListAdapter(
-  private val data: List<Game>,
-  private val binding: GameTextViewBinding,
+  initialData: List<Game> = listOf(),
   private val itemClick: (Game) -> Unit,
 ) : RecyclerView.Adapter<GameListAdapter.ViewHolder>() {
 
+  private var data: List<Game> = initialData
+
+  init {
+    notifyDataSetChanged()
+  }
+
   class ViewHolder(
-    itemView: View,
     private val itemClick: (Game) -> Unit,
     private val binding: GameTextViewBinding,
-  ) : RecyclerView.ViewHolder(itemView) {
+  ) : RecyclerView.ViewHolder(binding.root) {
 
     fun bindGameModel(game: Game) {
+      Log.d("wubalub", "binding game -> $game")
       with(game) {
-
         binding.itemText.text = this.names.international
         val platforms = game.platforms?.toString()
         binding.itemSubtext.text = platforms?.substring(1, platforms.length - 1)
@@ -36,10 +41,8 @@ class GameListAdapter(
   }
 
   override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-    val v = LayoutInflater
-      .from(parent.context)
-      .inflate(R.layout.game_text_view, parent, false)
-    return ViewHolder(v, itemClick, binding)
+    val binding = GameTextViewBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+    return ViewHolder(itemClick, binding)
   }
 
   override fun onBindViewHolder(holder: ViewHolder, position: Int) {
@@ -47,5 +50,10 @@ class GameListAdapter(
   }
 
   override fun getItemCount() = data.size
+
+  fun updateData(data: List<Game>) {
+    this.data = data
+    notifyDataSetChanged()
+  }
 
 }

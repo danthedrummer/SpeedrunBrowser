@@ -14,6 +14,8 @@ class SplashActivity : AppCompatActivity() {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_splash)
 
+    binding = ActivitySplashBinding.inflate(layoutInflater)
+
     val intent = Intent(this, MainActivity::class.java)
 
     val runnable = Runnable {

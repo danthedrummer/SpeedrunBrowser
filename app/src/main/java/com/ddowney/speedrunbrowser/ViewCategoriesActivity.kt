@@ -50,6 +50,8 @@ class ViewCategoriesActivity : AppCompatActivity() {
     categoriesProvider = component.categoriesProvider()
     storage = component.storage()
 
+    binding = ActivityViewCategoryBinding.inflate(layoutInflater)
+
     super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_view_category)
     setSupportActionBar(binding.gameToolbar)

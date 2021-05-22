@@ -55,12 +55,15 @@ class ViewRunActivity : YouTubeBaseActivity(), YouTubePlayer.OnInitializedListen
   private val players = mutableListOf<User>()
 
   private lateinit var binding: ActivityViewRunBinding
-  private lateinit var binding2: RunInfoItemsBinding
+  private lateinit var itemsBinding: RunInfoItemsBinding
 
   override fun onCreate(savedInstanceState: Bundle?) {
     val component = (this.application as SpeedrunBrowser).component
     userProvider = component.userProvider()
     storage = component.storage()
+
+    binding = ActivityViewRunBinding.inflate(layoutInflater)
+    itemsBinding = RunInfoItemsBinding.inflate(layoutInflater)
 
     //Using AppCompatDelegate to enable a toolbar with menu options
     delegate = AppCompatDelegate.create(this, this)
@@ -102,7 +105,7 @@ class ViewRunActivity : YouTubeBaseActivity(), YouTubePlayer.OnInitializedListen
     }
 
     if (responses > 1) {
-      binding2.vraRunnerNameLabel.text = getString(R.string.runners_label)
+      itemsBinding.vraRunnerNameLabel.text = getString(R.string.runners_label)
     }
 
   }
@@ -117,28 +120,28 @@ class ViewRunActivity : YouTubeBaseActivity(), YouTubePlayer.OnInitializedListen
         runnerNames.append(", ")
       }
     }
-    binding2.vraRunnerName.text = runnerNames.toString()
-    binding2.runnerNameHolder.visibility = View.VISIBLE
+    itemsBinding.vraRunnerName.text = runnerNames.toString()
+    itemsBinding.runnerNameHolder.visibility = View.VISIBLE
 
-    binding2.vraCategoryName.text = bundle.getString(CATEGORY_NAME_EXTRA)
-    binding2.categoryNameHolder.visibility = View.VISIBLE
+    itemsBinding.vraCategoryName.text = bundle.getString(CATEGORY_NAME_EXTRA)
+    itemsBinding.categoryNameHolder.visibility = View.VISIBLE
 
     val place = bundle.getInt(POSITION_EXTRA)
-    binding2.vraRunPlace.text = when (place) {
+    itemsBinding.vraRunPlace.text = when (place) {
       1 -> "${bundle.getInt(POSITION_EXTRA)}st"
       2 -> "${bundle.getInt(POSITION_EXTRA)}nd"
       3 -> "${bundle.getInt(POSITION_EXTRA)}rd"
       else -> "${bundle.getInt(POSITION_EXTRA)}th"
     }
-    binding2.runPlaceHolder.visibility = View.VISIBLE
+    itemsBinding.runPlaceHolder.visibility = View.VISIBLE
 
     val formattingTool = TimeFormatter()
-    binding2.vraRunTime.text = formattingTool.getReadableTime(run.times.primary_t)
-    binding2.timeHolder.visibility = View.VISIBLE
+    itemsBinding.vraRunTime.text = formattingTool.getReadableTime(run.times.primary_t)
+    itemsBinding.timeHolder.visibility = View.VISIBLE
 
     if (run.comment != null) {
-      binding2.vraRunComment.text = run.comment
-      binding2.commentHolder.visibility = View.VISIBLE
+      itemsBinding.vraRunComment.text = run.comment
+      itemsBinding.commentHolder.visibility = View.VISIBLE
     }
 
     displayVideo()
@@ -156,8 +159,8 @@ class ViewRunActivity : YouTubeBaseActivity(), YouTubePlayer.OnInitializedListen
       binding.youtubePlayer.initialize(YOUTUBE_API_KEY, this)
       binding.youtubePlayer.visibility = View.VISIBLE
     } else {
-      binding2.fallbackVideoHolder.visibility = View.VISIBLE
-      binding2.fallbackVideoButton.setOnClickListener {
+      itemsBinding.fallbackVideoHolder.visibility = View.VISIBLE
+      itemsBinding.fallbackVideoButton.setOnClickListener {
         val intent = Intent(Intent.ACTION_VIEW, Uri.parse(link.toString()))
         startActivity(intent)
       }
