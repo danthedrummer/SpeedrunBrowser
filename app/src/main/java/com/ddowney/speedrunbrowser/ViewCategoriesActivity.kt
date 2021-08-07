@@ -17,19 +17,28 @@ import com.ddowney.speedrunbrowser.networking.*
 import com.ddowney.speedrunbrowser.storage.SharedPreferencesStorage
 import com.ddowney.speedrunbrowser.storage.SharedPreferencesStorage.Companion.FAVOURITES_KEY
 import com.ddowney.speedrunbrowser.storage.Storage
+import dagger.hilt.android.AndroidEntryPoint
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.functions.Consumer
 import io.reactivex.schedulers.Schedulers
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class ViewCategoriesActivity : AppCompatActivity() {
 
   companion object {
     val GAME_EXTRA = "GAME_EXTRA"
   }
 
-  private lateinit var storage: Storage
-  private lateinit var gameProvider: GameProvider
-  private lateinit var categoriesProvider: CategoriesProvider
+  @Inject
+  lateinit var storage: Storage
+
+  @Inject
+  lateinit var gameProvider: GameProvider
+
+  @Inject
+  lateinit var categoriesProvider: CategoriesProvider
+
   private val errorConsumer = ErrorConsumer()
 
   private lateinit var game: Game
@@ -45,15 +54,10 @@ class ViewCategoriesActivity : AppCompatActivity() {
   private lateinit var binding: ActivityViewCategoryBinding
 
   override fun onCreate(savedInstanceState: Bundle?) {
-    val component = (this.application as SpeedrunBrowser).component
-    gameProvider = component.gameProvider()
-    categoriesProvider = component.categoriesProvider()
-    storage = component.storage()
+    super.onCreate(savedInstanceState)
 
     binding = ActivityViewCategoryBinding.inflate(layoutInflater)
-
-    super.onCreate(savedInstanceState)
-    setContentView(R.layout.activity_view_category)
+    setContentView(binding.root)
     setSupportActionBar(binding.gameToolbar)
 
     val bundle = this.intent.extras

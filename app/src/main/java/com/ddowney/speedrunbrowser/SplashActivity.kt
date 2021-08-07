@@ -5,16 +5,18 @@ import android.os.Bundle
 import android.os.Handler
 import androidx.appcompat.app.AppCompatActivity
 import com.ddowney.speedrunbrowser.databinding.ActivitySplashBinding
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class SplashActivity : AppCompatActivity() {
 
   private lateinit var binding: ActivitySplashBinding
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
-    setContentView(R.layout.activity_splash)
 
     binding = ActivitySplashBinding.inflate(layoutInflater)
+    setContentView(binding.root)
 
     val intent = Intent(this, MainActivity::class.java)
 

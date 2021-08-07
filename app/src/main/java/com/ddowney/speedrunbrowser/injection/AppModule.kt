@@ -1,15 +1,15 @@
 package com.ddowney.speedrunbrowser.injection
 
-import android.app.Application
 import dagger.Module
-import dagger.Provides
-import javax.inject.Singleton
+import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
 
-@Module
-class AppModule(private val application: Application) {
-
-  @Provides
-  @Singleton
-  fun provideApplication() = application
-
-}
+//@InstallIn(SingletonComponent::class)
+//@Module
+//abstract class AppModule {
+//
+////  @Binds
+////  @Singleton
+////  fun application():
+//
+//}

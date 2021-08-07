@@ -23,10 +23,18 @@ import com.ddowney.speedrunbrowser.utils.TimeFormatter
 import com.google.android.youtube.player.YouTubeBaseActivity
 import com.google.android.youtube.player.YouTubeInitializationResult
 import com.google.android.youtube.player.YouTubePlayer
+import dagger.hilt.EntryPoint
+import dagger.hilt.InstallIn
+import dagger.hilt.android.AndroidEntryPoint
+import dagger.hilt.android.EntryPointAccessors.fromApplication
+import dagger.hilt.components.SingletonComponent
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.functions.Consumer
 import io.reactivex.schedulers.Schedulers
+import javax.inject.Inject
+import javax.inject.Singleton
 
+//@AndroidEntryPoint <- Can't be Android entry point because it extends youtube activity :facepalm:
 class ViewRunActivity : YouTubeBaseActivity(), YouTubePlayer.OnInitializedListener, AppCompatCallback {
 
   companion object {
@@ -38,8 +46,12 @@ class ViewRunActivity : YouTubeBaseActivity(), YouTubePlayer.OnInitializedListen
     const val RANDOM_RUN_EXTRA = "RANDOM_RUN_EXTRA"
   }
 
-  private lateinit var storage: Storage
-  private lateinit var userProvider: UserProvider
+  @Inject
+  lateinit var storage: Storage
+
+  @Inject
+  lateinit var userProvider: UserProvider
+
   private val errorConsumer = ErrorConsumer()
 
   private lateinit var youtubePlayer: YouTubePlayer
@@ -58,18 +70,19 @@ class ViewRunActivity : YouTubeBaseActivity(), YouTubePlayer.OnInitializedListen
   private lateinit var itemsBinding: RunInfoItemsBinding
 
   override fun onCreate(savedInstanceState: Bundle?) {
-    val component = (this.application as SpeedrunBrowser).component
-    userProvider = component.userProvider()
-    storage = component.storage()
+    super.onCreate(savedInstanceState)
 
     binding = ActivityViewRunBinding.inflate(layoutInflater)
     itemsBinding = RunInfoItemsBinding.inflate(layoutInflater)
 
+    val entryPoint = fromApplication(this, ViewRunActivityEntryPoint::class.java)
+    userProvider = entryPoint.userProvider()
+    storage = entryPoint.storage()
+
     //Using AppCompatDelegate to enable a toolbar with menu options
     delegate = AppCompatDelegate.create(this, this)
     delegate.onCreate(savedInstanceState)
-    super.onCreate(savedInstanceState)
-    delegate.setContentView(R.layout.activity_view_run)
+    delegate.setContentView(binding.root)
     delegate.setSupportActionBar(binding.runToolbar)
 
     val bundle = this.intent.extras
@@ -286,6 +299,13 @@ class ViewRunActivity : YouTubeBaseActivity(), YouTubePlayer.OnInitializedListen
 
     storage.put(SharedPreferencesStorage.FAVOURITES_KEY, Favourites(updatedFavourites))
     return result
+  }
+
+  @EntryPoint
+  @InstallIn(SingletonComponent::class)
+  interface ViewRunActivityEntryPoint {
+    fun userProvider(): UserProvider
+    fun storage(): Storage
   }
 
 }

@@ -1,5 +1,7 @@
 package com.ddowney.speedrunbrowser.networking
 
+import com.ddowney.speedrunbrowser.injection.UserAgent
+import javax.inject.Inject
 import okhttp3.Interceptor
 import okhttp3.Response
 
@@ -9,7 +11,9 @@ import okhttp3.Response
  * The idea is that we can pass along the applicationId as the [headerValue] so we can tell
  * that the traffic is from this app and possibly even which version of the app.
  */
-class UserAgentHeaderInterceptor(private val headerValue: String) : Interceptor {
+class UserAgentHeaderInterceptor @Inject constructor(
+  @UserAgent private val headerValue: String,
+) : Interceptor {
 
   companion object {
     const val USER_AGENT_KEY = "user-agent"

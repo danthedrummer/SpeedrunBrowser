@@ -28,4 +28,5 @@
     <string name="resetting_list">Resetting game list</string>
     <string name="added_to_favourites">Added to favourites!</string>
     <string name="removed_from_favourites">Removed from favourites!</string>
+    <string name="title_activity_example_compose">ExampleCompose</string>
 </resources>

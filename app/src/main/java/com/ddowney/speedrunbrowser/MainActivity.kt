@@ -26,25 +26,33 @@ import com.ddowney.speedrunbrowser.storage.Storage
 import com.ddowney.speedrunbrowser.utils.JsonResourceReader
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
+import dagger.hilt.android.AndroidEntryPoint
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.functions.Consumer
 import io.reactivex.schedulers.Schedulers
 import java.util.*
+import javax.inject.Inject
 
 /**
  * Entry activity for Speedrun Browser
  */
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
   companion object {
     const val LOG_TAG = "MAIN_ACTIVITY_LOG"
   }
 
-  private lateinit var storage: Storage
-  private lateinit var gameProvider: GameProvider
-  private lateinit var categoriesProvider: CategoriesProvider
-  private val errorConsumer = ErrorConsumer()
+  @Inject
+  lateinit var storage: Storage
 
+  @Inject
+  lateinit var gameProvider: GameProvider
+
+  @Inject
+  lateinit var categoriesProvider: CategoriesProvider
+
+  private val errorConsumer = ErrorConsumer()
   private val random = Random()
 
   private lateinit var gameListAdapter: GameListAdapter
@@ -55,15 +63,10 @@ class MainActivity : AppCompatActivity() {
   private lateinit var binding: ActivityMainBinding
 
   override fun onCreate(savedInstanceState: Bundle?) {
-    val component = (this.application as SpeedrunBrowser).component
-    gameProvider = component.gameProvider()
-    categoriesProvider = component.categoriesProvider()
-    storage = component.storage()
+    super.onCreate(savedInstanceState)
 
     binding = ActivityMainBinding.inflate(layoutInflater)
-
-    super.onCreate(savedInstanceState)
-    setContentView(R.layout.activity_main)
+    setContentView(binding.root)
     setSupportActionBar(binding.mainToolbar)
 
     val gson = GsonBuilder().create()

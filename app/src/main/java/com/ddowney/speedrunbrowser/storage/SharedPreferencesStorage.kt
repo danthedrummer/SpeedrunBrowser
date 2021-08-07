@@ -2,11 +2,12 @@ package com.ddowney.speedrunbrowser.storage
 
 import android.content.SharedPreferences
 import com.google.gson.Gson
+import javax.inject.Inject
 
 /**
  * [SharedPreferences] backed implementation of [Storage]. Uses [Gson] for serialisation.
  */
-class SharedPreferencesStorage(
+class SharedPreferencesStorage @Inject constructor(
   private val sharedPreferences: SharedPreferences,
   private val gson: Gson,
 ) : Storage {

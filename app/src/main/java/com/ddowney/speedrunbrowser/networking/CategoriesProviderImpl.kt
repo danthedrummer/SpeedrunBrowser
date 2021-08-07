@@ -1,14 +1,16 @@
 package com.ddowney.speedrunbrowser.networking
 
+import com.ddowney.speedrunbrowser.injection.BaseUrl
 import com.ddowney.speedrunbrowser.models.Leaderboard
 import com.ddowney.speedrunbrowser.models.ListRoot
 import com.google.gson.Gson
 import io.reactivex.Observable
+import javax.inject.Inject
 import okhttp3.OkHttpClient
 
-class CategoriesProviderImpl(
+class CategoriesProviderImpl @Inject constructor(
   client: OkHttpClient,
-  baseUrl: String,
+  @BaseUrl baseUrl: String,
   gson: Gson,
 ) : BaseProvider(client, baseUrl, gson), CategoriesProvider {
 
