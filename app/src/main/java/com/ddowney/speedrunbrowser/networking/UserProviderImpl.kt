@@ -1,6 +1,6 @@
 package com.ddowney.speedrunbrowser.networking
 
-import com.ddowney.speedrunbrowser.injection.BaseUrl
+import com.ddowney.speedrunbrowser.injection.qualifiers.BaseUrl
 import com.ddowney.speedrunbrowser.models.ObjectRoot
 import com.ddowney.speedrunbrowser.models.User
 import com.google.gson.Gson

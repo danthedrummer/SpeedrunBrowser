@@ -16,7 +16,7 @@ buildscript {
                 "lifecycleRuntime": "2.3.1",
                 "material": "1.4.0",
                 "okhttp": "4.2.1",
-                "retrofit": "2.3.0",
+                "retrofit": "2.6.0",
 
                 // Test dependencies
                 "espresso": "3.4.0",

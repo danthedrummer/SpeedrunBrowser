@@ -1,18 +1,18 @@
 package com.ddowney.speedrunbrowser.injection
 
 import com.ddowney.speedrunbrowser.BuildConfig
+import com.ddowney.speedrunbrowser.injection.qualifiers.BaseUrl
+import com.ddowney.speedrunbrowser.injection.qualifiers.UserAgent
 import com.ddowney.speedrunbrowser.networking.*
 import com.google.gson.Gson
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
-import dagger.Reusable
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import java.util.concurrent.TimeUnit
-import javax.inject.Qualifier
 import javax.inject.Singleton
 
 @InstallIn(SingletonComponent::class)

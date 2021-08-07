@@ -1,4 +1,4 @@
-package com.ddowney.speedrunbrowser.injection
+package com.ddowney.speedrunbrowser.injection.qualifiers
 
 import javax.inject.Qualifier
 

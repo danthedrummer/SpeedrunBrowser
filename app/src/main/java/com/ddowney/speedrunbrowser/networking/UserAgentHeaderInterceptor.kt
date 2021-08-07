@@ -1,6 +1,6 @@
 package com.ddowney.speedrunbrowser.networking
 
-import com.ddowney.speedrunbrowser.injection.UserAgent
+import com.ddowney.speedrunbrowser.injection.qualifiers.UserAgent
 import javax.inject.Inject
 import okhttp3.Interceptor
 import okhttp3.Response

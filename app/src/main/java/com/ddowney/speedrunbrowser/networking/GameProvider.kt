@@ -13,6 +13,8 @@ interface GameProvider {
    */
   fun getGames(options: Map<String, String>): Observable<ListRoot<Game>>
 
+  suspend fun coGetGames(options: Map<String, String> = emptyMap()): ListRoot<Game>
+
   /**
    * Get all [Category] objects for the game belonging to the given [id]
    */
