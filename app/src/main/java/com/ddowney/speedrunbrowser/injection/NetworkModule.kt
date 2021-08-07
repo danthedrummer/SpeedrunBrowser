@@ -20,8 +20,6 @@ import javax.inject.Singleton
 abstract class NetworkModule {
 
   companion object {
-    const val BASE_URL = "https://www.speedrun.com/"
-    const val USER_AGENT_VALUE = BuildConfig.USER_AGENT_HEADER
 
     @Provides
     @Singleton
@@ -41,36 +39,26 @@ abstract class NetworkModule {
 
     @BaseUrl
     @Provides
-    @Singleton
-    fun baseUrl() = BASE_URL
+    fun baseUrl() = "https://www.speedrun.com/"
 
     @UserAgent
     @Provides
-    @Singleton
-    fun userAgent() = USER_AGENT_VALUE
+    fun userAgent() = BuildConfig.USER_AGENT_HEADER
   }
 
   @Binds
   @Singleton
-  abstract fun provideCategoriesProvider(impl: CategoriesProviderImpl): CategoriesProvider
+  abstract fun categoriesProvider(impl: CategoriesProviderImpl): CategoriesProvider
 
   @Binds
   @Singleton
-  abstract fun provideGameProvider(impl: GameProviderImpl): GameProvider
+  abstract fun gameProvider(impl: GameProviderImpl): GameProvider
 
   @Binds
   @Singleton
-  abstract fun provideRunProvider(impl: RunProviderImpl): RunProvider
+  abstract fun runProvider(impl: RunProviderImpl): RunProvider
 
   @Binds
   @Singleton
-  abstract fun provideUserProvider(impl: UserProviderImpl): UserProvider
+  abstract fun userProvider(impl: UserProviderImpl): UserProvider
 }
-
-@Qualifier
-@Retention(AnnotationRetention.BINARY)
-annotation class BaseUrl
-
-@Qualifier
-@Retention(AnnotationRetention.BINARY)
-annotation class UserAgent
