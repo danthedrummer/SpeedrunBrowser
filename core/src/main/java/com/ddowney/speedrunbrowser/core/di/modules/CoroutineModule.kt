@@ -1,6 +1,5 @@
-package com.ddowney.speedrunbrowser.injection.modules
+package com.ddowney.speedrunbrowser.core.di.modules
 
-import com.ddowney.speedrunbrowser.injection.qualifiers.IoDispatcher
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -9,10 +8,11 @@ import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import javax.inject.Qualifier
 
 @InstallIn(SingletonComponent::class)
 @Module
-abstract class CoroutinesModule {
+internal abstract class CoroutineModule {
 
   companion object {
 
@@ -24,3 +24,7 @@ abstract class CoroutinesModule {
     fun coroutineScope() = CoroutineScope(SupervisorJob() + CoroutineName("speedrun-browser"))
   }
 }
+
+@Qualifier
+@Retention(AnnotationRetention.BINARY)
+public annotation class IoDispatcher

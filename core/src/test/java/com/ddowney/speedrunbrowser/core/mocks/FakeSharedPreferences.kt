@@ -1,9 +1,9 @@
-package com.ddowney.speedrunbrowser.mocks
+package com.ddowney.speedrunbrowser.core.mocks
 
 import android.content.SharedPreferences
 import java.util.*
 
-class FakeSharedPreferences : SharedPreferences {
+internal class FakeSharedPreferences : SharedPreferences {
 
   private val editor = FakeEditor { transactions ->
     transactions.forEach {

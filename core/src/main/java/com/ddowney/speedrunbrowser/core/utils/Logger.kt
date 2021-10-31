@@ -1,14 +1,14 @@
-package com.ddowney.speedrunbrowser.utils
+package com.ddowney.speedrunbrowser.core.utils
 
 import android.util.Log
 
-internal interface Logger {
-  fun d(tag: String, message: String)
-  fun d(tag: String, message: String, throwable: Throwable)
-  fun w(tag: String, message: String)
-  fun w(tag: String, message: String, throwable: Throwable)
-  fun e(tag: String, message: String)
-  fun e(tag: String, message: String, throwable: Throwable)
+public interface Logger {
+  public fun d(tag: String, message: String)
+  public fun d(tag: String, message: String, throwable: Throwable)
+  public fun w(tag: String, message: String)
+  public fun w(tag: String, message: String, throwable: Throwable)
+  public fun e(tag: String, message: String)
+  public fun e(tag: String, message: String, throwable: Throwable)
 }
 
 internal class DebugLogger : Logger {

@@ -1,9 +1,9 @@
-package com.ddowney.speedrunbrowser.injection.modules
+package com.ddowney.speedrunbrowser.core.di.modules
 
-import com.ddowney.speedrunbrowser.BuildConfig
-import com.ddowney.speedrunbrowser.utils.DebugLogger
-import com.ddowney.speedrunbrowser.utils.Logger
-import com.ddowney.speedrunbrowser.utils.StubLogger
+import com.ddowney.speedrunbrowser.core.BuildConfig
+import com.ddowney.speedrunbrowser.core.utils.DebugLogger
+import com.ddowney.speedrunbrowser.core.utils.Logger
+import com.ddowney.speedrunbrowser.core.utils.StubLogger
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

@@ -1,9 +1,9 @@
-package com.ddowney.speedrunbrowser.injection.modules
+package com.ddowney.speedrunbrowser.core.di.modules
 
 import android.content.Context
 import android.content.SharedPreferences
-import com.ddowney.speedrunbrowser.storage.SharedPreferencesStorage
-import com.ddowney.speedrunbrowser.storage.Storage
+import com.ddowney.speedrunbrowser.core.storage.SharedPreferencesStorage
+import com.ddowney.speedrunbrowser.core.storage.Storage
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -14,7 +14,7 @@ import javax.inject.Singleton
 
 @InstallIn(SingletonComponent::class)
 @Module
-abstract class StorageModule {
+internal abstract class StorageModule {
 
   companion object {
     private const val SHARED_PREFERENCES_NAME = "speedrun_browser_preferences_name"

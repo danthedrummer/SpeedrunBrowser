@@ -1,12 +1,11 @@
-package com.ddowney.speedrunbrowser
+package com.ddowney.speedrunbrowser.core.storage
 
-import com.ddowney.speedrunbrowser.mocks.FakeSharedPreferences
-import com.ddowney.speedrunbrowser.storage.SharedPreferencesStorage
+import com.ddowney.speedrunbrowser.core.mocks.FakeSharedPreferences
 import com.google.common.truth.Truth.assertThat
 import com.google.gson.Gson
 import org.junit.Test
 
-class SharedPreferencesStorageTests {
+internal class SharedPreferencesStorageTests {
 
   private val gson = Gson()
   private val testKey = "c137"

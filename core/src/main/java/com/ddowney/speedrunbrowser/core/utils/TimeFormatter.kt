@@ -1,20 +1,20 @@
-package com.ddowney.speedrunbrowser.utils
+package com.ddowney.speedrunbrowser.core.utils
 
 import kotlin.math.roundToInt
 
 /**
  * Created by Dan on 22/11/2017.
  */
-class TimeFormatter {
+public object TimeFormatter {
 
   /**
    * Takes a time in seconds and returns it in a readable format
    * e.g. 1:14:40.150 -> HH:mm:ss.sss
    *
-   * @param seconds The number of seconds
-   * @return The readable time
+   * @param seconds the number of seconds
+   * @return the readable time
    */
-  fun getReadableTime(seconds: Float): String {
+  public fun getReadableTime(seconds: Float): String {
     val str = StringBuilder()
     var tmpSeconds = seconds.roundToInt()
     var amount: Int

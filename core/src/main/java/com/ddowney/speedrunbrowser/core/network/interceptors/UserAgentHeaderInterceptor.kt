@@ -1,9 +1,9 @@
-package com.ddowney.speedrunbrowser.networking
+package com.ddowney.speedrunbrowser.core.network.interceptors
 
-import com.ddowney.speedrunbrowser.injection.qualifiers.UserAgent
-import javax.inject.Inject
+import com.ddowney.speedrunbrowser.core.di.modules.UserAgent
 import okhttp3.Interceptor
 import okhttp3.Response
+import javax.inject.Inject
 
 /**
  * This header is not required for interacting with the Speedrun.com api but we should be
@@ -11,7 +11,7 @@ import okhttp3.Response
  * The idea is that we can pass along the applicationId as the [headerValue] so we can tell
  * that the traffic is from this app and possibly even which version of the app.
  */
-class UserAgentHeaderInterceptor @Inject constructor(
+internal class UserAgentHeaderInterceptor @Inject constructor(
   @UserAgent private val headerValue: String,
 ) : Interceptor {
 
@@ -19,11 +19,8 @@ class UserAgentHeaderInterceptor @Inject constructor(
     const val USER_AGENT_KEY = "user-agent"
   }
 
-  override fun intercept(chain: Interceptor.Chain): Response {
-    val requestHeaderBuilder = chain.request().newBuilder()
-
-    requestHeaderBuilder.addHeader(USER_AGENT_KEY, headerValue)
-
-    return chain.proceed(requestHeaderBuilder.build())
-  }
+  override fun intercept(chain: Interceptor.Chain): Response = chain.request().newBuilder()
+    .addHeader(USER_AGENT_KEY, headerValue)
+    .build()
+    .let(chain::proceed)
 }
