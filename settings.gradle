@@ -1,1 +1,5 @@
 include ':app'
+include ':feature:browse:data'
+include ':feature:browse:domain'
+include ':feature:browse:presentation'
+include ':core'

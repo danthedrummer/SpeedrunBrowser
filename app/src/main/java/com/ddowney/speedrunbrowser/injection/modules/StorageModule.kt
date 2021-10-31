@@ -1,14 +1,12 @@
-package com.ddowney.speedrunbrowser.injection
+package com.ddowney.speedrunbrowser.injection.modules
 
 import android.content.Context
 import android.content.SharedPreferences
 import com.ddowney.speedrunbrowser.storage.SharedPreferencesStorage
 import com.ddowney.speedrunbrowser.storage.Storage
-import com.google.gson.Gson
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
-import dagger.Reusable
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent

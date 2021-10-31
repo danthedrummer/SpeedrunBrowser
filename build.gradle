@@ -4,14 +4,13 @@ buildscript {
         versions = [
                 // Source dependencies
                 "appCompat": "1.3.1",
-                "compose": "1.0.1",
-                "composeActivity": "1.3.1",
-                "composeViewModel": "1.0.0-alpha07",
                 "constraintLayout": "2.1.0",
                 "coroutines": "1.5.1",
+                "firebaseBom": "28.3.1",
                 "dagger": "2.38.1",
                 "dagger_hilt_work": "1.0.0",
                 "dagger_hilt_compiler": "1.0.0-beta01",
+                "gson": "2.8.8",
                 "kotlin": "1.5.21",
                 "lifecycleRuntime": "2.3.1",
                 "material": "1.4.0",
@@ -21,7 +20,7 @@ buildscript {
                 // Test dependencies
                 "espresso": "3.4.0",
                 "junit": "4.13.2",
-                "junitUi": "1.0.1",
+                "junitUi": "1.0.4",
                 "mockk": "1.11.0",
                 "runner": "1.4.0",
                 "truth": "0.39",
@@ -32,9 +31,10 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath group: "com.android.tools.build", name: "gradle", version: '7.0.0'
-        classpath group: "org.jetbrains.kotlin", name: "kotlin-gradle-plugin", version: versions.kotlin
+        classpath group: "com.android.tools.build", name: "gradle", version: '7.0.3'
+        classpath group: "org.jetbrains.kotlin", name: "kotlin-gradle-plugin", version: '1.5.31'
         classpath "com.google.dagger:hilt-android-gradle-plugin:$versions.dagger"
+        classpath 'com.google.gms:google-services:4.3.10'
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
