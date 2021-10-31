@@ -1,6 +1,7 @@
 package com.ddowney.speedrunbrowser.core.di.modules
 
 import com.ddowney.speedrunbrowser.core.BuildConfig
+import com.ddowney.speedrunbrowser.core.network.services.GameService
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -40,6 +41,10 @@ internal abstract class NetworkModule {
       .client(httpClient)
       .addConverterFactory(GsonConverterFactory.create())
       .build()
+
+    @Singleton
+    @Provides
+    fun gameApi(retrofit: Retrofit): GameService = retrofit.create(GameService::class.java)
   }
 }
 

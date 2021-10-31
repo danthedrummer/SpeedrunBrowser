@@ -1,4 +1,4 @@
-package com.ddowney.speedrunbrowser.core.mocks
+package com.ddowney.speedrunbrowser.core.fakes
 
 import android.content.SharedPreferences
 import java.util.*

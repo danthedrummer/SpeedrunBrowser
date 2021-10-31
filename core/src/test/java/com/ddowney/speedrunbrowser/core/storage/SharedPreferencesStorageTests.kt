@@ -1,6 +1,6 @@
 package com.ddowney.speedrunbrowser.core.storage
 
-import com.ddowney.speedrunbrowser.core.mocks.FakeSharedPreferences
+import com.ddowney.speedrunbrowser.core.fakes.FakeSharedPreferences
 import com.google.common.truth.Truth.assertThat
 import com.google.gson.Gson
 import org.junit.Test
