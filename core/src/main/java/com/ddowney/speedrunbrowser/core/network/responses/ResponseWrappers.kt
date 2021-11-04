@@ -6,6 +6,6 @@ package com.ddowney.speedrunbrowser.core.network.responses
  *
  * The type of this data could be a Run, a Game, etc.
  */
-public data class ListRoot<out T>(val data: List<T>)
+internal data class ListRoot<out T>(val data: List<T>)
 
-public data class ObjectRoot<out T>(val data: T)
+internal data class ObjectRoot<out T>(val data: T)
