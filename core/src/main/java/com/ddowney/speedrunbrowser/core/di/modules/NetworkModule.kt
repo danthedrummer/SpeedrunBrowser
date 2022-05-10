@@ -3,14 +3,17 @@ package com.ddowney.speedrunbrowser.core.di.modules
 import com.ddowney.speedrunbrowser.core.BuildConfig
 import com.ddowney.speedrunbrowser.core.network.services.GameService
 import com.ddowney.speedrunbrowser.core.network.services.LeaderboardService
+import com.ddowney.speedrunbrowser.core.network.services.RunService
 import dagger.Module
 import dagger.Provides
+import dagger.Reusable
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.create
 import javax.inject.Qualifier
 import javax.inject.Singleton
 
@@ -45,11 +48,15 @@ internal abstract class NetworkModule {
 
     @Singleton
     @Provides
-    fun gameApi(retrofit: Retrofit): GameService = retrofit.create(GameService::class.java)
+    fun gameService(retrofit: Retrofit): GameService = retrofit.create()
 
     @Singleton
     @Provides
-    fun leaderboardApi(retrofit: Retrofit): LeaderboardService = retrofit.create(LeaderboardService::class.java)
+    fun leaderboardService(retrofit: Retrofit): LeaderboardService = retrofit.create()
+
+    @Reusable
+    @Provides
+    fun runService(retrofit: Retrofit): RunService = retrofit.create()
   }
 }
 
