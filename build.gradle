@@ -3,19 +3,20 @@ buildscript {
     ext {
         versions = [
                 // Source dependencies
-                "appCompat": "1.3.1",
-                "constraintLayout": "2.1.0",
+                "appCompat": "1.4.1",
+                "constraintLayout": "2.1.4",
                 "coroutines": "1.5.1",
                 "firebaseBom": "28.3.1",
                 "dagger": "2.38.1",
                 "dagger_hilt_work": "1.0.0",
                 "dagger_hilt_compiler": "1.0.0-beta01",
-                "gson": "2.8.8",
+                "gson": "2.8.9",
                 "kotlin": "1.5.21",
-                "lifecycleRuntime": "2.3.1",
-                "material": "1.4.0",
+                "lifecycleRuntime": "2.4.1",
+                "material": "1.6.0",
                 "okhttp": "4.2.1",
                 "retrofit": "2.6.0",
+                "compose": "1.1.1",
 
                 // Test dependencies
                 "espresso": "3.4.0",
@@ -32,7 +33,7 @@ buildscript {
     }
     dependencies {
         classpath group: "com.android.tools.build", name: "gradle", version: '7.0.3'
-        classpath group: "org.jetbrains.kotlin", name: "kotlin-gradle-plugin", version: '1.5.31'
+        classpath group: "org.jetbrains.kotlin", name: "kotlin-gradle-plugin", version: '1.6.10'
         classpath "com.google.dagger:hilt-android-gradle-plugin:$versions.dagger"
 
         // NOTE: Do not place your application dependencies here; they belong
