@@ -1,4 +1,4 @@
-package com.ddowney.speedrunbrowser.core.network.api
+package com.ddowney.speedrunbrowser.core.network.repository
 
 import com.ddowney.speedrunbrowser.core.di.modules.IoDispatcher
 import com.ddowney.speedrunbrowser.core.network.responses.Run
@@ -10,7 +10,7 @@ import javax.inject.Inject
 /**
  * Fetches [Run] details from the speedrun.com API.
  */
-public class RunApi @Inject internal constructor(
+public class RunRepository @Inject internal constructor(
   private val runService: RunService,
   @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
 ) {

@@ -6,11 +6,11 @@ plugins {
 }
 
 android {
-    compileSdkVersion 31
+    compileSdkVersion 33
     defaultConfig {
         applicationId "com.ddowney.speedrunbrowser"
         minSdkVersion 21
-        targetSdkVersion 31
+        targetSdkVersion 33
         versionCode 2
         versionName "1.2.0-SNAPSHOT"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -42,19 +42,18 @@ android {
         test.java.srcDirs += 'src/test/kotlin'
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
     }
     kotlinOptions {
-        jvmTarget = '1.8'
-        useIR = true
+        jvmTarget = '11'
     }
     buildFeatures {
         viewBinding true
         compose true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.1.1"
+        kotlinCompilerExtensionVersion = "1.4.2"
     }
 }
 
@@ -77,17 +76,24 @@ dependencies {
 
     implementation "com.google.code.gson:gson:$versions.gson"
 
+    implementation "io.coil-kt:coil:2.1.0"
+    implementation "io.coil-kt:coil-compose:2.1.0"
+
     // dagger
     implementation "com.google.dagger:hilt-android:$versions.dagger"
     kapt "com.google.dagger:hilt-compiler:$versions.dagger"
 
     // compose
     implementation "androidx.compose.ui:ui:$versions.compose"
-    implementation "androidx.compose.foundation:foundation:$versions.compose"
+    implementation "androidx.compose.foundation:foundation:$versions.composeFoundation"
     implementation "androidx.compose.ui:ui-tooling:$versions.compose"
-    implementation "androidx.compose.material:material:$versions.compose"
-    implementation "androidx.activity:activity-compose:1.4.0"
-
+    implementation "androidx.compose.material:material:$versions.composeMaterial"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-compose:2.5.1"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1"
+    implementation "androidx.activity:activity-compose:1.6.1"
+    implementation "androidx.hilt:hilt-navigation-compose:1.0.0"
+    implementation "androidx.navigation:navigation-compose:2.5.3"
+    implementation "androidx.constraintlayout:constraintlayout-compose:1.0.1"
 
     testImplementation "junit:junit:$versions.junit"
     testImplementation "io.mockk:mockk:$versions.mockk"

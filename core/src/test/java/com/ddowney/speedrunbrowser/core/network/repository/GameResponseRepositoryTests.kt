@@ -1,16 +1,20 @@
-package com.ddowney.speedrunbrowser.core.network.api
+package com.ddowney.speedrunbrowser.core.network.repository
 
+import com.ddowney.speedrunbrowser.core.db.SpeedrunBrowserDatabase
+import com.ddowney.speedrunbrowser.core.db.dao.GameDao
 import com.ddowney.speedrunbrowser.core.network.responses.Category
-import com.ddowney.speedrunbrowser.core.network.responses.Game
+import com.ddowney.speedrunbrowser.core.network.responses.GameResponse
 import com.ddowney.speedrunbrowser.core.network.responses.Leaderboard
 import com.ddowney.speedrunbrowser.core.network.responses.Level
 import com.ddowney.speedrunbrowser.core.network.responses.ListRoot
 import com.ddowney.speedrunbrowser.core.network.responses.ObjectRoot
+import com.ddowney.speedrunbrowser.core.network.responses.Pagination
 import com.ddowney.speedrunbrowser.core.network.responses.Variable
 import com.ddowney.speedrunbrowser.core.network.services.GameService
 import com.google.common.truth.Truth.assertThat
 import io.mockk.coEvery
 import io.mockk.coVerify
+import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestCoroutineDispatcher
@@ -18,25 +22,36 @@ import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Test
 
 @ExperimentalCoroutinesApi
-internal class GameApiTests {
+internal class GameResponseRepositoryTests {
 
   companion object {
     private const val GAME_ID = "default-game-id"
+
+    private val defaultPagination = Pagination(
+      max = 20,
+      offset = 0,
+      size = 20,
+    )
   }
 
   private val gameService = mockk<GameService> {
-    coEvery { getGames(any()) } returns ListRoot(emptyList())
+    coEvery { getGames(any()) } returns ListRoot(emptyList(), defaultPagination)
     coEvery { getGame(GAME_ID, any()) } returns ObjectRoot(mockk())
-    coEvery { getCategoriesForGame(GAME_ID, any()) } returns ListRoot(mockk())
-    coEvery { getLevelsForGame(GAME_ID, any()) } returns ListRoot(mockk())
-    coEvery { getVariablesForGame(GAME_ID, any()) } returns ListRoot(mockk())
-    coEvery { getDerivedGamesForGame(GAME_ID, any()) } returns ListRoot(mockk())
-    coEvery { getRecordsForGame(GAME_ID, any()) } returns ListRoot(mockk())
+    coEvery { getCategoriesForGame(GAME_ID, any()) } returns ListRoot(mockk(), defaultPagination)
+    coEvery { getLevelsForGame(GAME_ID, any()) } returns ListRoot(mockk(), defaultPagination)
+    coEvery { getVariablesForGame(GAME_ID, any()) } returns ListRoot(mockk(), defaultPagination)
+    coEvery { getDerivedGamesForGame(GAME_ID, any()) } returns ListRoot(mockk(), defaultPagination)
+    coEvery { getRecordsForGame(GAME_ID, any()) } returns ListRoot(mockk(), defaultPagination)
+  }
+  private val gameDao = mockk<GameDao>()
+  private val database = mockk<SpeedrunBrowserDatabase> {
+    every { gameDao() } returns gameDao
   }
 
-  private val api = GameApi(
+  private val api = GameRepository(
     gameService = gameService,
-    ioDispatcher = TestCoroutineDispatcher()
+    ioDispatcher = TestCoroutineDispatcher(),
+    database = database,
   )
 
   // region getGames
@@ -57,8 +72,8 @@ internal class GameApiTests {
 
   @Test
   fun `getGames should return the contents of the response`() = runBlockingTest {
-    val expected = listOf<Game>(mockk())
-    coEvery { gameService.getGames() } returns ListRoot(expected)
+    val expected = listOf<GameResponse>(mockk())
+    coEvery { gameService.getGames() } returns ListRoot(expected, defaultPagination)
     val result = api.getGames()
     assertThat(result).isEqualTo(expected)
   }
@@ -82,7 +97,7 @@ internal class GameApiTests {
 
   @Test
   fun `getGame should return the contents of the response`() = runBlockingTest {
-    val expected = mockk<Game>()
+    val expected = mockk<GameResponse>()
     coEvery { gameService.getGame(GAME_ID) } returns ObjectRoot(expected)
     val result = api.getGame(GAME_ID)
     assertThat(result).isEqualTo(expected)
@@ -108,7 +123,7 @@ internal class GameApiTests {
   @Test
   fun `getCategoriesForGame should return the contents of the response`() = runBlockingTest {
     val expected = listOf<Category>(mockk())
-    coEvery { gameService.getCategoriesForGame(GAME_ID) } returns ListRoot(expected)
+    coEvery { gameService.getCategoriesForGame(GAME_ID) } returns ListRoot(expected, defaultPagination)
     val result = api.getCategoriesForGame(GAME_ID)
     assertThat(result).isEqualTo(expected)
   }
@@ -133,7 +148,7 @@ internal class GameApiTests {
   @Test
   fun `getLevelsForGame should return the contents of the response`() = runBlockingTest {
     val expected = listOf<Level>(mockk())
-    coEvery { gameService.getLevelsForGame(GAME_ID) } returns ListRoot(expected)
+    coEvery { gameService.getLevelsForGame(GAME_ID) } returns ListRoot(expected, defaultPagination)
     val result = api.getLevelsForGame(GAME_ID)
     assertThat(result).isEqualTo(expected)
   }
@@ -158,7 +173,7 @@ internal class GameApiTests {
   @Test
   fun `getVariablesForGame should return the contents of the response`() = runBlockingTest {
     val expected = listOf<Variable>(mockk())
-    coEvery { gameService.getVariablesForGame(GAME_ID) } returns ListRoot(expected)
+    coEvery { gameService.getVariablesForGame(GAME_ID) } returns ListRoot(expected, defaultPagination)
     val result = api.getVariablesForGame(GAME_ID)
     assertThat(result).isEqualTo(expected)
   }
@@ -182,8 +197,8 @@ internal class GameApiTests {
 
   @Test
   fun `getDerivedGamesForGame should return the contents of the response`() = runBlockingTest {
-    val expected = listOf<Game>(mockk())
-    coEvery { gameService.getDerivedGamesForGame(GAME_ID) } returns ListRoot(expected)
+    val expected = listOf<GameResponse>(mockk())
+    coEvery { gameService.getDerivedGamesForGame(GAME_ID) } returns ListRoot(expected, defaultPagination)
     val result = api.getDerivedGamesForGame(GAME_ID)
     assertThat(result).isEqualTo(expected)
   }
@@ -208,7 +223,7 @@ internal class GameApiTests {
   @Test
   fun `getRecordsForGame should return the contents of the response`() = runBlockingTest {
     val expected = listOf<Leaderboard>(mockk())
-    coEvery { gameService.getRecordsForGame(GAME_ID) } returns ListRoot(expected)
+    coEvery { gameService.getRecordsForGame(GAME_ID) } returns ListRoot(expected, defaultPagination)
     val result = api.getRecordsForGame(GAME_ID)
     assertThat(result).isEqualTo(expected)
   }

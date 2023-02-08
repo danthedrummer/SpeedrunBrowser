@@ -2,7 +2,7 @@ package com.ddowney.speedrunbrowser.core.network.responses
 
 import com.google.gson.annotations.SerializedName
 
-public data class RuleSet(
+public data class RuleSetResponse(
   @SerializedName("show-milliseconds") public val showMilliseconds: Boolean,
   @SerializedName("require-verification") public val requireVerification: Boolean,
   @SerializedName("require-video") public val requireVideo: Boolean,

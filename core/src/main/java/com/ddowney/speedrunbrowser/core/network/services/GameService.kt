@@ -1,7 +1,7 @@
 package com.ddowney.speedrunbrowser.core.network.services
 
 import com.ddowney.speedrunbrowser.core.network.responses.Category
-import com.ddowney.speedrunbrowser.core.network.responses.Game
+import com.ddowney.speedrunbrowser.core.network.responses.GameResponse
 import com.ddowney.speedrunbrowser.core.network.responses.Leaderboard
 import com.ddowney.speedrunbrowser.core.network.responses.Level
 import com.ddowney.speedrunbrowser.core.network.responses.ListRoot
@@ -21,13 +21,13 @@ internal interface GameService {
   @GET("api/v1/games")
   suspend fun getGames(
     @QueryMap options: Map<String, String> = emptyMap(),
-  ): ListRoot<Game>
+  ): ListRoot<GameResponse>
 
   @GET("api/v1/games/{id}")
   suspend fun getGame(
     @Path("id") id: String,
     @QueryMap options: Map<String, String> = emptyMap(),
-  ): ObjectRoot<Game>
+  ): ObjectRoot<GameResponse>
 
   @GET("api/v1/games/{id}/categories")
   suspend fun getCategoriesForGame(
@@ -51,7 +51,7 @@ internal interface GameService {
   suspend fun getDerivedGamesForGame(
     @Path("id") id: String,
     @QueryMap options: Map<String, String> = emptyMap(),
-  ): ListRoot<Game>
+  ): ListRoot<GameResponse>
 
   @GET("api/v1/games/{id}/records")
   suspend fun getRecordsForGame(

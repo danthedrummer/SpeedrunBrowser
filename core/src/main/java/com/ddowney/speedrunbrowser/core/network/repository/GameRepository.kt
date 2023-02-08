@@ -1,8 +1,11 @@
-package com.ddowney.speedrunbrowser.core.network.api
+package com.ddowney.speedrunbrowser.core.network.repository
 
+import com.ddowney.speedrunbrowser.core.db.SpeedrunBrowserDatabase
+import com.ddowney.speedrunbrowser.core.db.entities.GameEntity
 import com.ddowney.speedrunbrowser.core.di.modules.IoDispatcher
+import com.ddowney.speedrunbrowser.core.model.Game
 import com.ddowney.speedrunbrowser.core.network.responses.Category
-import com.ddowney.speedrunbrowser.core.network.responses.Game
+import com.ddowney.speedrunbrowser.core.network.responses.GameResponse
 import com.ddowney.speedrunbrowser.core.network.responses.Leaderboard
 import com.ddowney.speedrunbrowser.core.network.responses.Level
 import com.ddowney.speedrunbrowser.core.network.responses.Variable
@@ -12,43 +15,57 @@ import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 /**
- * Fetches [Game] details from the speedrun.com API
+ * Fetches [GameResponse] details from the speedrun.com API
  */
-public class GameApi @Inject internal constructor(
+public class GameRepository @Inject internal constructor(
   private val gameService: GameService,
   @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
+  database: SpeedrunBrowserDatabase,
 ) {
 
+  private val gameDao by lazy { database.gameDao() }
+
   /**
-   * Gets a page of [Game] entities
+   * Gets a page of [GameResponse] entities
    *
    * @param options a map of query params
-   * @return a list of [Game] entities
+   * @return a list of [GameResponse] entities
    */
   public suspend fun getGames(
     options: Map<String, String> = emptyMap(),
   ): List<Game> = withContext(ioDispatcher) {
-    gameService.getGames(options).data
+    val games = gameService.getGames(options).data
+      .map(GameEntity::toEntity)
+//    gameDao.insertAll(games)
+    games.map { it.toGame() }
   }
 
   /**
-   * Gets a specific [Game] entity
+   * Gets a specific [GameResponse] entity
    *
-   * @param id the ID of the [Game] entity
+   * @param id the ID of the [GameResponse] entity
    * @param options a map of query params
-   * @return a [Game] entity
+   * @return a [GameResponse] entity
    */
   public suspend fun getGame(
     id: String,
     options: Map<String, String> = emptyMap(),
   ): Game = withContext(ioDispatcher) {
-    gameService.getGame(id, options).data
+    val localGame = gameDao.getById(id)
+    if (localGame != null) {
+      return@withContext localGame.toGame()
+    }
+
+    val remoteGame = gameService.getGame(id, options).data
+    val entity = GameEntity.toEntity(remoteGame)
+//    gameDao.insert(entity)
+    entity.toGame()
   }
 
   /**
-   * Gets a list of [Category] entities for a [Game]
+   * Gets a list of [Category] entities for a [GameResponse]
    *
-   * @param id the ID of the [Game] entity
+   * @param id the ID of the [GameResponse] entity
    * @param options a map of query params
    * @return a list of [Category] entities
    */
@@ -60,9 +77,9 @@ public class GameApi @Inject internal constructor(
   }
 
   /**
-   * Gets a list of [Level] entities for a [Game]
+   * Gets a list of [Level] entities for a [GameResponse]
    *
-   * @param id the ID of the [Game] entity
+   * @param id the ID of the [GameResponse] entity
    * @param options a map of query params
    * @return a list of [Level] entities
    */
@@ -74,9 +91,9 @@ public class GameApi @Inject internal constructor(
   }
 
   /**
-   * Gets a list of [Variable] entities for a [Game]
+   * Gets a list of [Variable] entities for a [GameResponse]
    *
-   * @param id the ID of the [Game] entity
+   * @param id the ID of the [GameResponse] entity
    * @param options a map of query params
    * @return a list of [Variable] entities
    */
@@ -88,23 +105,23 @@ public class GameApi @Inject internal constructor(
   }
 
   /**
-   * Gets a list of derived [Game] entities for a [Game]
+   * Gets a list of derived [GameResponse] entities for a [GameResponse]
    *
-   * @param id the ID of the [Game] entity
+   * @param id the ID of the [GameResponse] entity
    * @param options a map of query params
-   * @return a list of derived [Game] entities
+   * @return a list of derived [GameResponse] entities
    */
   public suspend fun getDerivedGamesForGame(
     id: String,
     options: Map<String, String> = emptyMap(),
-  ): List<Game> = withContext(ioDispatcher) {
+  ): List<GameResponse> = withContext(ioDispatcher) {
     gameService.getDerivedGamesForGame(id, options).data
   }
 
   /**
-   * Gets a list of [Leaderboard] entities for a [Game]
+   * Gets a list of [Leaderboard] entities for a [GameResponse]
    *
-   * @param id the ID of the [Game] entity
+   * @param id the ID of the [GameResponse] entity
    * @param options a map of query params
    * @return a list of [Leaderboard] entities
    */

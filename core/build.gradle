@@ -6,11 +6,11 @@ plugins {
 }
 
 android {
-    compileSdk 31
+    compileSdk 33
 
     defaultConfig {
         minSdk 21
-        targetSdk 30
+        targetSdk 33
 
         buildConfigField("String", "SPEEDRUN_BASE_URL", "\"https://www.speedrun.com/\"")
         buildConfigField("String", "USER_AGENT_HEADER", "\"speedrun-browser-android/1.2.0-SNAPSHOT\"")
@@ -26,11 +26,11 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
     }
     kotlinOptions {
-        jvmTarget = '1.8'
+        jvmTarget = '11'
         freeCompilerArgs += '-Xexplicit-api=strict'
     }
 }
@@ -49,6 +49,11 @@ dependencies {
     // dagger
     implementation "com.google.dagger:hilt-android:$versions.dagger"
     kapt "com.google.dagger:hilt-compiler:$versions.dagger"
+
+    // room
+    implementation "androidx.room:room-runtime:$versions.room"
+    implementation "androidx.room:room-ktx:$versions.room"
+    kapt "androidx.room:room-compiler:$versions.room"
 
     testImplementation "junit:junit:$versions.junit"
     testImplementation "io.mockk:mockk:$versions.mockk"

@@ -1,7 +1,8 @@
-package com.ddowney.speedrunbrowser.core.network.api
+package com.ddowney.speedrunbrowser.core.network.repository
 
 import com.ddowney.speedrunbrowser.core.network.responses.ListRoot
 import com.ddowney.speedrunbrowser.core.network.responses.ObjectRoot
+import com.ddowney.speedrunbrowser.core.network.responses.Pagination
 import com.ddowney.speedrunbrowser.core.network.responses.Run
 import com.ddowney.speedrunbrowser.core.network.services.RunService
 import com.google.common.truth.Truth.assertThat
@@ -14,18 +15,24 @@ import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Test
 
 @ExperimentalCoroutinesApi
-internal class RunApiTests {
+internal class RunRepositoryTests {
 
   companion object {
     private const val RUN_ID = "some-run"
+
+    private val defaultPagination = Pagination(
+      max = 20,
+      offset = 0,
+      size = 20,
+    )
   }
 
   private val runService = mockk<RunService> {
-    coEvery { getRuns(any()) } returns ListRoot(emptyList())
+    coEvery { getRuns(any()) } returns ListRoot(emptyList(), defaultPagination)
     coEvery { getRun(any(), any()) } returns ObjectRoot(mockk())
   }
 
-  private val runApi = RunApi(
+  private val runRepository = RunRepository(
     runService = runService,
     ioDispatcher = TestCoroutineDispatcher()
   )
@@ -33,7 +40,7 @@ internal class RunApiTests {
   // region getRuns
   @Test
   fun `getRuns should access the network`() = runBlockingTest {
-    runApi.getRuns()
+    runRepository.getRuns()
     coVerify { runService.getRuns() }
   }
 
@@ -42,15 +49,15 @@ internal class RunApiTests {
     val options = mapOf(
       "foo" to "bar",
     )
-    runApi.getRuns(options)
+    runRepository.getRuns(options)
     coVerify { runService.getRuns(options) }
   }
 
   @Test
   fun `getRuns should return the contents of the response`() = runBlockingTest {
     val expected = listOf<Run>(mockk(), mockk())
-    coEvery { runService.getRuns() } returns ListRoot(expected)
-    val result = runApi.getRuns()
+    coEvery { runService.getRuns() } returns ListRoot(expected, defaultPagination)
+    val result = runRepository.getRuns()
     assertThat(result).isEqualTo(expected)
   }
   // endregion
@@ -59,7 +66,7 @@ internal class RunApiTests {
 
   @Test
   fun `getRun should access the network`() = runBlockingTest {
-    runApi.getRun(RUN_ID)
+    runRepository.getRun(RUN_ID)
     coVerify { runService.getRun(RUN_ID) }
   }
 
@@ -68,7 +75,7 @@ internal class RunApiTests {
     val options = mapOf(
       "foo" to "bar",
     )
-    runApi.getRun(RUN_ID, options)
+    runRepository.getRun(RUN_ID, options)
     coVerify { runService.getRun(RUN_ID, options) }
   }
 
@@ -76,7 +83,7 @@ internal class RunApiTests {
   fun `getRun should return the contents of the response`() = runBlockingTest {
     val expected = mockk<Run>()
     coEvery { runService.getRun(RUN_ID) } returns ObjectRoot(expected)
-    val result = runApi.getRun(RUN_ID)
+    val result = runRepository.getRun(RUN_ID)
     assertThat(result).isEqualTo(expected)
   }
   // endregion

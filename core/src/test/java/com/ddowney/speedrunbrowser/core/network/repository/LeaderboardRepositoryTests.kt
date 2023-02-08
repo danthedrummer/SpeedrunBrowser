@@ -1,4 +1,4 @@
-package com.ddowney.speedrunbrowser.core.network.api
+package com.ddowney.speedrunbrowser.core.network.repository
 
 import com.ddowney.speedrunbrowser.core.network.responses.Leaderboard
 import com.ddowney.speedrunbrowser.core.network.responses.ObjectRoot
@@ -13,7 +13,7 @@ import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Test
 
 @ExperimentalCoroutinesApi
-internal class LeaderboardApiTests {
+internal class LeaderboardRepositoryTests {
 
   companion object {
     private const val GAME_ID = "some-game-id"
@@ -26,7 +26,7 @@ internal class LeaderboardApiTests {
     coEvery { getLeaderboard(GAME_ID, LEVEL_ID, CATEGORY_ID, any()) } returns ObjectRoot(mockk())
   }
 
-  private val api = LeaderboardApi(
+  private val api = LeaderboardRepository(
     leaderboardService = leaderboardService,
     ioDispatcher = TestCoroutineDispatcher()
   )

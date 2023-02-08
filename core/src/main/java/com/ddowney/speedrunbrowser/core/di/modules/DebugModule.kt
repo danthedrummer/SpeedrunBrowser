@@ -12,11 +12,9 @@ import dagger.hilt.components.SingletonComponent
 
 @InstallIn(SingletonComponent::class)
 @Module
-internal abstract class DebugModule {
+internal object DebugModule {
 
-  companion object {
-    @Provides
-    @Reusable
-    fun logger(): Logger = if (BuildConfig.DEBUG) DebugLogger() else StubLogger()
-  }
+  @Provides
+  @Reusable
+  fun logger(): Logger = if (BuildConfig.DEBUG) DebugLogger() else StubLogger()
 }

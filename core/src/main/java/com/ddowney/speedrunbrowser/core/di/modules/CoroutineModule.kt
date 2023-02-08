@@ -13,18 +13,15 @@ import javax.inject.Singleton
 
 @InstallIn(SingletonComponent::class)
 @Module
-internal abstract class CoroutineModule {
+internal object CoroutineModule {
 
-  companion object {
+  @IoDispatcher
+  @Provides
+  fun ioDispatcher() = Dispatchers.IO
 
-    @IoDispatcher
-    @Provides
-    fun ioDispatcher() = Dispatchers.IO
-
-    @Provides
-    @Singleton
-    fun coroutineScope() = CoroutineScope(SupervisorJob() + CoroutineName("speedrun-browser"))
-  }
+  @Provides
+  @Singleton
+  fun coroutineScope() = CoroutineScope(SupervisorJob() + CoroutineName("speedrun-browser"))
 }
 
 @Qualifier
