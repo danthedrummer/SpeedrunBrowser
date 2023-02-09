@@ -1,10 +1,16 @@
 package com.ddowney.speedrunbrowser.ui.browse
 
 import com.ddowney.speedrunbrowser.core.model.Platform
+import com.ddowney.speedrunbrowser.ui.base.ViewState
 
-internal data class BrowseState(
-  val games: List<BrowseGame> = emptyList(),
-)
+internal sealed interface BrowseState : ViewState {
+
+  object Loading : BrowseState
+
+  data class Loaded(
+    val games: List<BrowseGame>,
+  ) : BrowseState
+}
 
 internal data class BrowseGame(
   val id: String,

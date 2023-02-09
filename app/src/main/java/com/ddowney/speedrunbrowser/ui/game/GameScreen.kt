@@ -5,9 +5,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.CircularProgressIndicator
@@ -15,6 +13,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -35,26 +34,29 @@ fun GameScreen(
   viewModel: GameScreenViewModel = hiltViewModel(),
   onBackPressed: () -> Unit,
 ) {
-  val viewState = viewModel.state
-  GameScreen(
-    state = viewState,
-    onBackPressed = onBackPressed,
-  )
+  val viewState by viewModel.state
+  GameScreen(state = viewState, onBackPressed = onBackPressed)
 }
 
 @Composable
 private fun GameScreen(
-  state: GameScreenState?,
+  state: GameScreenState,
   onBackPressed: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
   Surface(
     modifier = modifier,
   ) {
-    if (state != null) {
-      GameScreenContent(state, onBackPressed)
-    } else {
-      FullScreenLoading(modifier)
+    when (state) {
+      is GameScreenState.Loading -> {
+        FullScreenLoading()
+      }
+      is GameScreenState.Loaded -> {
+        GameScreenContent(
+          state = state,
+          onBackPressed = onBackPressed,
+        )
+      }
     }
   }
 }
@@ -75,7 +77,7 @@ private fun FullScreenLoading(modifier: Modifier = Modifier) {
 
 @Composable
 private fun GameScreenContent(
-  state: GameScreenState,
+  state: GameScreenState.Loaded,
   onBackPressed: () -> Unit,
 ) {
   Column(
@@ -114,7 +116,8 @@ private fun GameScreenContent(
     Spacer(modifier = Modifier.weight(1F))
 
     Text(
-      text = state.genres?.map { it.name }?.takeIf { it.isNotEmpty() }?.joinToString() ?: "No genres",
+      text = state.genres?.map { it.name }?.takeIf { it.isNotEmpty() }?.joinToString()
+        ?: "No genres",
       style = MaterialTheme.typography.h6,
       overflow = TextOverflow.Ellipsis,
       maxLines = 1,

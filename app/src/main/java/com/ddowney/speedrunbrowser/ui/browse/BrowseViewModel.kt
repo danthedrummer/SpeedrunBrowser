@@ -1,12 +1,11 @@
 package com.ddowney.speedrunbrowser.ui.browse
 
-import androidx.lifecycle.ViewModel
+import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.ddowney.speedrunbrowser.core.network.repository.GameRepository
 import com.ddowney.speedrunbrowser.core.network.repository.PlatformRepository
+import com.ddowney.speedrunbrowser.ui.base.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -14,10 +13,7 @@ import javax.inject.Inject
 internal class BrowseViewModel @Inject constructor(
   private val gameRepository: GameRepository,
   private val platformRepository: PlatformRepository,
-) : ViewModel() {
-
-  private val _state = MutableStateFlow(BrowseState())
-  val state: StateFlow<BrowseState> get() = _state
+) : BaseViewModel<BrowseEvent, BrowseState, BrowseSideEffect>() {
 
   init {
     viewModelScope.launch {
@@ -43,7 +39,17 @@ internal class BrowseViewModel @Inject constructor(
         )
       }
 
-      _state.value = BrowseState(games = newState)
+      setState { BrowseState.Loaded(games = newState) }
     }
+  }
+
+  override fun createInitialState(): BrowseState = BrowseState.Loading
+
+  override fun handleEvent(event: BrowseEvent) {
+    Log.d(TAG, "Received unhandled event - $event")
+  }
+
+  companion object {
+    const val TAG = "BrowseViewModel"
   }
 }
