@@ -9,7 +9,7 @@ public data class Game(
   val releaseDate: String?,
   val ruleSet: RuleSet?,
   val gameTypes: List<String>?,
-  val platforms: List<String>?,
+  val platforms: List<Platform>?,
   val regions: List<String>?,
   val genres: List<Genre>?,
   val engines: List<String>?,

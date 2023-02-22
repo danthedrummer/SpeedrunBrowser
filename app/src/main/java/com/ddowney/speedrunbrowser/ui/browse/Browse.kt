@@ -167,7 +167,7 @@ internal fun GameItem(
     )
 
     Text(
-      text = game.platforms.joinToString { it.name }.takeIf { it.isNotEmpty() } ?: "Unknown",
+      text = game.platforms.mapNotNull { it.name }.joinToString { it }.takeIf { it.isNotEmpty() } ?: "Unknown",
       style = MaterialTheme.typography.subtitle1,
       modifier = Modifier.constrainAs(platforms) {
         start.linkTo(releaseYear.end, 8.dp)

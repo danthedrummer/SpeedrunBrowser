@@ -1,5 +1,6 @@
 package com.ddowney.speedrunbrowser.core.network.responses
 
+import com.ddowney.speedrunbrowser.core.serialization.Embed
 import com.google.gson.annotations.SerializedName
 
 public data class GameResponse(
@@ -11,9 +12,9 @@ public data class GameResponse(
   @SerializedName("release-date") public val releaseDate: String?,
   @SerializedName("ruleset") public val ruleSet: RuleSetResponse?,
   @SerializedName("gametypes") public val gameTypes: List<String>?,
-  public val platforms: List<String>?,
+  public val platforms: Embed<PlatformResponse>,
   public val regions: List<String>?,
-  public val genres: List<String>?,
+  public val genres: Embed<GenreResponse>,
   public val engines: List<String>?,
   public val developers: List<String>?,
   public val publishers: List<String>?,
@@ -35,4 +36,14 @@ public data class GameResponse(
     abbreviation = abbreviation,
     weblink = weblink,
   )
+}
+
+public sealed interface EmbeddedGenre {
+  public data class Raw(
+    val data: List<String>,
+  ) : EmbeddedGenre
+
+  public data class Embedded(
+    val data: List<GenreResponse>,
+  ) : EmbeddedGenre
 }

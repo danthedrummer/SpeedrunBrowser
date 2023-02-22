@@ -5,8 +5,8 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 import com.ddowney.speedrunbrowser.core.model.Game
-import com.ddowney.speedrunbrowser.core.network.responses.EmbeddableProperty
 import com.ddowney.speedrunbrowser.core.network.responses.GameResponse
+import com.ddowney.speedrunbrowser.core.serialization.Embed
 
 @Entity(
   tableName = "game",
@@ -15,6 +15,11 @@ import com.ddowney.speedrunbrowser.core.network.responses.GameResponse
       entity = GenreEntity::class,
       parentColumns = arrayOf("id"),
       childColumns = arrayOf("genres"),
+    ),
+    ForeignKey(
+      entity = PlatformEntity::class,
+      parentColumns = arrayOf("id"),
+      childColumns = arrayOf("platforms"),
     )
   ]
 )
@@ -27,7 +32,7 @@ internal data class GameEntity(
   val releaseDate: String?,
   @Embedded val ruleSet: RuleSetEntity?,
   val gameTypes: List<String>?,
-  val platforms: List<String>?,
+  val platforms: List<PlatformEntity>?,
   val regions: List<String>?,
   val genres: List<GenreEntity>?,
   val engines: List<String>?,
@@ -47,7 +52,7 @@ internal data class GameEntity(
     releaseDate = releaseDate,
     ruleSet = ruleSet?.toRuleSet(),
     gameTypes = gameTypes,
-    platforms = platforms,
+    platforms = platforms?.map { it.toPlatform() },
     regions = regions,
     genres = genres?.map { it.toGenre() },
     engines = engines,
@@ -69,9 +74,15 @@ internal data class GameEntity(
       releaseDate = response.releaseDate,
       ruleSet = response.ruleSet?.let(RuleSetEntity::toEntity),
       gameTypes = response.gameTypes,
-      platforms = response.platforms,
+      platforms = when (val platforms = response.platforms) {
+        is Embed.Populated -> platforms.data.map(PlatformEntity::toEntity)
+        is Embed.Raw -> platforms.data.map { PlatformEntity(it) }
+      },
       regions = response.regions,
-      genres = response.genres?.map { GenreEntity(it) },
+      genres = when (val genres = response.genres) {
+        is Embed.Populated -> genres.data.map(GenreEntity::toEntity)
+        is Embed.Raw -> genres.data.map { GenreEntity(it) }
+      },
       engines = response.engines,
       developers = response.developers,
       publishers = response.publishers,

@@ -26,8 +26,8 @@ internal class BrowseViewModel @Inject constructor(
 
       val newState = games.map {
 
-        val platforms = it.platforms?.map { platformId ->
-          platformRepository.getPlatform(platformId)
+        val platforms = it.platforms?.map { platform ->
+          platformRepository.getPlatform(platform.id)
         } ?: emptyList()
 
         BrowseGame(

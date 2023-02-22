@@ -8,7 +8,7 @@ import com.ddowney.speedrunbrowser.core.network.responses.PlatformResponse
 @Entity(tableName = "platform")
 internal data class PlatformEntity(
   @PrimaryKey val id: String,
-  val name: String,
+  val name: String? = null,
 ) {
 
   fun toPlatform(): Platform = Platform(

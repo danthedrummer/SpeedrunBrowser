@@ -7,7 +7,6 @@ import com.ddowney.speedrunbrowser.core.db.SpeedrunBrowserDatabase
 import com.ddowney.speedrunbrowser.core.db.converter.Converters
 import com.ddowney.speedrunbrowser.core.storage.SharedPreferencesStorage
 import com.ddowney.speedrunbrowser.core.storage.Storage
-import com.google.gson.Gson
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -27,10 +26,6 @@ internal interface StorageModule {
 
   companion object {
     private const val SHARED_PREFERENCES_NAME = "speedrun_browser_preferences_name"
-
-    @Provides
-    @Reusable
-    fun gson(): Gson = Gson()
 
     @Provides
     @Singleton

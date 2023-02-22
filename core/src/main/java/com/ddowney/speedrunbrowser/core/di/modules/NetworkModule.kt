@@ -43,7 +43,10 @@ internal object NetworkModule {
 
   @Singleton
   @Provides
-  fun retrofit(httpClient: OkHttpClient, gson: Gson): Retrofit = Retrofit.Builder()
+  fun retrofit(
+    httpClient: OkHttpClient,
+    @NetworkGson gson: Gson,
+  ): Retrofit = Retrofit.Builder()
     .baseUrl(BuildConfig.SPEEDRUN_BASE_URL)
     .client(httpClient)
     .addConverterFactory(GsonConverterFactory.create(gson))

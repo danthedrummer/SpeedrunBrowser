@@ -1,6 +1,7 @@
 package com.ddowney.speedrunbrowser.core.storage
 
 import android.content.SharedPreferences
+import com.ddowney.speedrunbrowser.core.di.modules.BaseGson
 import com.ddowney.speedrunbrowser.core.di.modules.IoDispatcher
 import com.google.gson.Gson
 import kotlinx.coroutines.CoroutineDispatcher
@@ -12,7 +13,7 @@ import javax.inject.Inject
  */
 internal class SharedPreferencesStorage @Inject constructor(
   private val sharedPreferences: SharedPreferences,
-  private val gson: Gson,
+  @BaseGson private val gson: Gson,
   @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
 ) : Storage {
 

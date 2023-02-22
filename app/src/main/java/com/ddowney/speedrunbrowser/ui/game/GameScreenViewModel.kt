@@ -24,12 +24,12 @@ class GameScreenViewModel @Inject constructor(
       val game = gameRepository.getGame(
         id = gameId,
         options = mapOf(
-//          "embed" to "genres",
+          "embed" to "genres,platforms",
         )
       )
 
-      val platforms = game.platforms?.map { platformId ->
-        platformRepository.getPlatform(platformId)
+      val platforms = game.platforms?.map { platform ->
+        platformRepository.getPlatform(platform.id)
       } ?: emptyList()
 
       setState {

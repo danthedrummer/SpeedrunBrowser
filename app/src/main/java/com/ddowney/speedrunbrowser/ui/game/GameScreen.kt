@@ -125,5 +125,16 @@ private fun GameScreenContent(
     )
 
     Spacer(modifier = Modifier.weight(1F))
+
+    Text(
+      text = state.platforms.map { it.name }.takeIf { it.isNotEmpty() }?.joinToString()
+        ?: "No platforms",
+      style = MaterialTheme.typography.h6,
+      overflow = TextOverflow.Ellipsis,
+      maxLines = 1,
+      modifier = Modifier.weight(2F)
+    )
+
+    Spacer(modifier = Modifier.weight(1F))
   }
 }
