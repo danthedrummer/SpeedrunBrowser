@@ -2,24 +2,20 @@ package com.ddowney.speedrunbrowser.ui.browse
 
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
@@ -37,7 +33,8 @@ import coil.request.ImageRequest
 import com.ddowney.speedrunbrowser.R
 import com.ddowney.speedrunbrowser.core.model.Platform
 import com.ddowney.speedrunbrowser.theme.SpeedrunBrowserColors
-import com.ddowney.speedrunbrowser.ui.SpeedrunBrowserTopBar
+import com.ddowney.speedrunbrowser.ui.common.FullScreenLoading
+import com.ddowney.speedrunbrowser.ui.common.SpeedrunBrowserTopBar
 
 @Composable
 internal fun Browse(
@@ -70,21 +67,6 @@ internal fun Browse(
         FullScreenLoading()
       }
     }
-
-  }
-}
-
-/**
- * Full screen circular progress indicator
- */
-@Composable
-private fun FullScreenLoading(modifier: Modifier = Modifier) {
-  Box(
-    modifier = modifier
-      .fillMaxSize()
-      .wrapContentSize(Alignment.Center)
-  ) {
-    CircularProgressIndicator()
   }
 }
 
