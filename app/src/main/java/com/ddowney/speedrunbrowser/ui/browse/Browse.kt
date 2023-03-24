@@ -6,9 +6,10 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
@@ -21,7 +22,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -31,7 +32,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.ddowney.speedrunbrowser.R
-import com.ddowney.speedrunbrowser.core.model.Platform
 import com.ddowney.speedrunbrowser.theme.SpeedrunBrowserColors
 import com.ddowney.speedrunbrowser.ui.common.FullScreenLoading
 import com.ddowney.speedrunbrowser.ui.common.SpeedrunBrowserTopBar
@@ -91,19 +91,11 @@ internal fun GameItem(
   modifier: Modifier,
 ) {
   ConstraintLayout(
-    modifier = modifier.clickable { navigateToGame(game.id) },
+    modifier = modifier
+      .padding(horizontal = 16.dp, vertical = 8.dp)
+      .clickable { navigateToGame(game.id) },
   ) {
-    val (divider, image, title, releaseYear, platforms) = createRefs()
-
-    Divider(
-      modifier = Modifier
-        .fillMaxWidth()
-        .constrainAs(divider) {
-          top.linkTo(parent.top)
-          centerHorizontallyTo(parent)
-          width = fillToConstraints
-        },
-    )
+    val (image, title, releaseYear, platforms) = createRefs()
 
     AsyncImage(
       model = ImageRequest.Builder(LocalContext.current)
@@ -117,44 +109,48 @@ internal fun GameItem(
         .width(64.dp)
         .height(64.dp)
         .clip(CircleShape)
-        .border(1.dp, shape = CircleShape, color = SpeedrunBrowserColors.primary)
+        .border(width = 1.dp, shape = CircleShape, color = SpeedrunBrowserColors.primary)
         .constrainAs(image) {
-          start.linkTo(parent.start, 16.dp)
-          top.linkTo(parent.top, 16.dp)
-          bottom.linkTo(parent.bottom, 16.dp)
+          start.linkTo(parent.start)
+          centerVerticallyTo(parent)
         },
     )
 
     Text(
-      text = game.name.trim(),
-      style = MaterialTheme.typography.h6,
+      text = game.name,
+      style = MaterialTheme.typography.subtitle1,
       overflow = TextOverflow.Ellipsis,
       maxLines = 1,
       modifier = Modifier.constrainAs(title) {
         start.linkTo(image.end, 16.dp)
-        end.linkTo(parent.end, 16.dp)
-        top.linkTo(parent.top, 16.dp)
+        end.linkTo(parent.end)
+        top.linkTo(parent.top)
         width = fillToConstraints
       },
     )
 
     Text(
-      text = "${game.releaseYear}",
-      style = MaterialTheme.typography.subtitle1,
-      modifier = Modifier.constrainAs(releaseYear) {
+      text = game.platforms,
+      style = MaterialTheme.typography.caption,
+      overflow = TextOverflow.Ellipsis,
+      maxLines = 1,
+      modifier = Modifier.constrainAs(platforms) {
         start.linkTo(title.start)
         top.linkTo(title.bottom, 4.dp)
+        end.linkTo(parent.end)
+        width = fillToConstraints
       },
-      fontWeight = FontWeight.Bold,
+      fontStyle = FontStyle.Italic,
     )
 
     Text(
-      text = game.platforms.mapNotNull { it.name }.joinToString { it }.takeIf { it.isNotEmpty() } ?: "Unknown",
-      style = MaterialTheme.typography.subtitle1,
-      modifier = Modifier.constrainAs(platforms) {
-        start.linkTo(releaseYear.end, 8.dp)
-        top.linkTo(title.bottom, 4.dp)
+      text = game.releaseYear,
+      style = MaterialTheme.typography.caption,
+      modifier = Modifier.constrainAs(releaseYear) {
+        start.linkTo(title.start)
+        top.linkTo(platforms.bottom, 2.dp)
       },
+      fontStyle = FontStyle.Italic,
     )
   }
 }
@@ -165,16 +161,17 @@ internal fun GameList(
   navigateToGame: (gameId: String) -> Unit,
 ) {
   LazyColumn {
-    items(
-      items = games,
-      itemContent = { game ->
-        GameItem(
-          game = game,
-          navigateToGame = navigateToGame,
-          modifier = Modifier.fillParentMaxWidth(),
-        )
+    itemsIndexed(items = games) { index, game ->
+      GameItem(
+        game = game,
+        navigateToGame = navigateToGame,
+        modifier = Modifier.fillParentMaxWidth(),
+      )
+
+      if (index < games.lastIndex) {
+        Divider(modifier = Modifier.fillMaxWidth())
       }
-    )
+    }
   }
 }
 
@@ -184,13 +181,8 @@ fun DefaultGameList() {
   val game = BrowseGame(
     id = "1234",
     name = "Elden Ring",
-    releaseYear = 2022,
-    platforms = listOf(
-      Platform(
-        id = "1234",
-        name = "PC",
-      )
-    ),
+    releaseYear = "2022",
+    platforms = "PC, Xbox, Playstation 5",
   )
   GameList(
     games = listOf(game),

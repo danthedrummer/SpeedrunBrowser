@@ -24,18 +24,18 @@ internal class BrowseViewModel @Inject constructor(
         options = mapOf("max" to "100"),
       )
 
-      val newState = games.map {
+      val newState = games.map { game ->
 
-        val platforms = it.platforms?.map { platform ->
+        val platforms = game.platforms?.map { platform ->
           platformRepository.getPlatform(platform.id)
         } ?: emptyList()
 
         BrowseGame(
-          id = it.id,
-          name = it.name,
-          releaseYear = it.released,
-          platforms = platforms,
-          tinyImageUri = it.assets?.coverTiny,
+          id = game.id,
+          name = game.name.trim(),
+          releaseYear = game.released.toString(),
+          platforms = platforms.mapNotNull { it.name }.joinToString { it }.takeIf { it.isNotEmpty() } ?: "Unknown",
+          tinyImageUri = game.assets?.coverTiny,
         )
       }
 

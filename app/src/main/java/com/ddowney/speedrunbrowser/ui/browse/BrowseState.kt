@@ -1,6 +1,5 @@
 package com.ddowney.speedrunbrowser.ui.browse
 
-import com.ddowney.speedrunbrowser.core.model.Platform
 import com.ddowney.speedrunbrowser.ui.base.ViewState
 
 internal sealed interface BrowseState : ViewState {
@@ -15,8 +14,8 @@ internal sealed interface BrowseState : ViewState {
 internal data class BrowseGame(
   val id: String,
   val name: String,
-  val releaseYear: Int,
-  val platforms: List<Platform>,
+  val releaseYear: String,
+  val platforms: String,
   val tinyImageUri: String? = null,
 )
 

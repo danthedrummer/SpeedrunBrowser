@@ -1,6 +1,5 @@
 package com.ddowney.speedrunbrowser.core.network.repository
 
-import android.util.Log
 import com.ddowney.speedrunbrowser.core.db.SpeedrunBrowserDatabase
 import com.ddowney.speedrunbrowser.core.db.entities.PlatformEntity
 import com.ddowney.speedrunbrowser.core.di.modules.IoDispatcher

@@ -37,13 +37,3 @@ public data class GameResponse(
     weblink = weblink,
   )
 }
-
-public sealed interface EmbeddedGenre {
-  public data class Raw(
-    val data: List<String>,
-  ) : EmbeddedGenre
-
-  public data class Embedded(
-    val data: List<GenreResponse>,
-  ) : EmbeddedGenre
-}
